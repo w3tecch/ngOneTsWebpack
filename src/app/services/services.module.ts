@@ -1,6 +1,7 @@
 /**
  * Import dependencies
  */
+import HttpService from './utils/http.service.ts';
 
 /**
  * Define namespace of module
@@ -14,6 +15,7 @@ const namespace = 'app.services';
  *
  * @type {string}
  */
+export const httpService = `${namespace}.httpService`;
 
 /**
  * Define and export angular setup for this module
@@ -21,4 +23,5 @@ const namespace = 'app.services';
  * @type {string} returns angular FQDN module name
  */
 export default angular.module(namespace, [])
+  .service(httpService, HttpService)
   .name;

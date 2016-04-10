@@ -5,6 +5,7 @@ import angularTranslate from './angularTranslate.config.ts';
 import angularLocalStorage from './angularLocalStorage.config.ts';
 import angularRouter from './angularRouter.config.ts';
 import angularLogger from './angularLogger.config.ts';
+import angularModel from './angularModel.config.ts';
 
 /**
  * Define namespace of module
@@ -24,4 +25,5 @@ export default angular.module(namespace, [])
   .config(angularRouter)
   .value('$routerRootComponent', 'app')
   .run(angularLogger)
+  .run(angularModel)
   .name;
