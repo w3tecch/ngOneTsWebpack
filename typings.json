@@ -11,8 +11,6 @@
     "mocha": "github:DefinitelyTyped/DefinitelyTyped/mocha/mocha.d.ts#d6dd320291705694ba8e1a79497a908e9f5e6617",
     "moment": "github:DefinitelyTyped/DefinitelyTyped/moment/moment.d.ts#7d3a939fbe55576fad2e074d007f7cc671aa0e78",
     "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#8cf8164641be73e8f1e652c2a5b967c7210b6729",
-    "rx": "github:Reactive-Extensions/RxJS/ts/rx.d.ts",
-    "rx.angular": "https://raw.githubusercontent.com/Reactive-Extensions/rx.angular.js/master/ts/rx.angular.d.ts",
     "selenium-webdriver": "github:DefinitelyTyped/DefinitelyTyped/selenium-webdriver/selenium-webdriver.d.ts#a83677ed13add14c2ab06c7325d182d0ba2784ea",
     "sinon": "github:DefinitelyTyped/DefinitelyTyped/sinon/sinon.d.ts#6e7d83167d86d857817bd492786f8304f5c4a0e4",
     "webpack": "github:DefinitelyTyped/DefinitelyTyped/webpack/webpack.d.ts#95c02169ba8fa58ac1092422efbd2e3174a206f4"
