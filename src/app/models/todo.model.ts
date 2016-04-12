@@ -2,7 +2,7 @@
  * Import dependencies
  */
 import AbstractModel,
-  {IModelFillAbles, IModelFillAblesTypes, IModelAttributes, IAbstractModel} from './abstract.model.ts';
+  {IModelFillAbles, IModelFillAblesTypes, IAbstractModel} from './abstract.model.ts';
 
 export interface ITodoModelAttributes {
   id: number;
@@ -35,15 +35,6 @@ class TodoModel extends AbstractModel implements ITodoModel {
    */
   public rootUrl = 'todos';
   /* tslint:enable:no-unused-variable */
-
-  /**
-   * Creates an instance of TaskModel.
-   *
-   * @param {IModelAttributes} [attrs] (description)
-   */
-  constructor(attrs?: IModelAttributes) {
-    super(attrs);
-  }
 
   /**
    * The available attributes for this model

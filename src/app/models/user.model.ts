@@ -2,7 +2,7 @@
  * Import dependencies
  */
 import AbstractModel,
-  {IModelFillAbles, IModelFillAblesTypes, IModelAttributes, IAbstractModel} from './abstract.model.ts';
+  {IModelFillAbles, IModelFillAblesTypes, IAbstractModel} from './abstract.model.ts';
 
 export interface IUserModelAttributes {
   id: number;
@@ -36,15 +36,6 @@ class UserModel extends AbstractModel implements IUserModel {
    */
   public rootUrl = 'users';
   /* tslint:enable:no-unused-variable */
-
-  /**
-   * Creates an instance of TaskModel.
-   *
-   * @param {IModelAttributes} [attrs] (description)
-   */
-  constructor(attrs?: IModelAttributes) {
-    super(attrs);
-  }
 
   /**
    * The available attributes for this model
