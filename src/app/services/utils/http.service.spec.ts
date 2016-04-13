@@ -203,4 +203,116 @@ describe('http.service', () => {
         });
     });
 
+    describe('custom', () => {
+
+        it('should send GET request with given URL', () => {
+            httpBackend.expect('GET', `${AppConfig.ENV.API_URL}/test`).respond({});
+            httpService.custom('GET', '/test');
+            httpBackend.flush();
+        });
+
+        it('should send GET request with given URL, params and header', () => {
+            const params: any = {
+                name: 'Jimbo',
+                age: 55
+            };
+            const headers = {
+                'SOME-HEADER': 'X-123-X'
+            };
+            httpBackend.expect(
+                'GET',
+                `${AppConfig.ENV.API_URL}/test?age=55&name=Jimbo`,
+                undefined,
+                (headers: any) => {
+                    return headers['SOME-HEADER'] === 'X-123-X';
+                }
+            ).respond({});
+            httpService.custom('GET', '/test', params, undefined, headers);
+            httpBackend.flush();
+        });
+
+        it('should send POST request with given URL, params, data, headers', () => {
+            const params: any = {
+                name: 'Jimbo',
+                age: 55
+            };
+            const headers = {
+                'SOME-HEADER': 'X-123-X'
+            };
+            httpBackend.expect(
+                'POST',
+                `${AppConfig.ENV.API_URL}/test?age=55&name=Jimbo`,
+                {name: 'Jimbo'},
+                (headers: any) => {
+                    return headers['SOME-HEADER'] === 'X-123-X';
+                }
+            ).respond({});
+            httpService.custom('POST', '/test', params, {name: 'Jimbo'}, headers);
+            httpBackend.flush();
+        });
+
+        it('should send PUT request with given URL, params, data, headers', () => {
+            const params: any = {
+                name: 'Jimbo',
+                age: 55
+            };
+            const headers = {
+                'SOME-HEADER': 'X-123-X'
+            };
+            httpBackend.expect(
+                'PUT',
+                `${AppConfig.ENV.API_URL}/test?age=55&name=Jimbo`,
+                {name: 'Jimbo'},
+                (headers: any) => {
+                    return headers['SOME-HEADER'] === 'X-123-X';
+                }
+            ).respond({});
+            httpService.custom('PUT', '/test', params, {name: 'Jimbo'}, headers);
+            httpBackend.flush();
+        });
+
+        it('should send DELETE request with given URL, params, headers', () => {
+            const params: any = {
+                name: 'Jimbo',
+                age: 55
+            };
+            const headers = {
+                'SOME-HEADER': 'X-123-X'
+            };
+            httpBackend.expect(
+                'DELETE',
+                `${AppConfig.ENV.API_URL}/test?age=55&name=Jimbo`,
+                undefined,
+                (headers: any) => {
+                    return headers['SOME-HEADER'] === 'X-123-X';
+                }
+            ).respond({});
+            httpService.custom('DELETE', '/test', params, {name: 'Jimbo'}, headers);
+            httpBackend.flush();
+        });
+
+        it('should return a promise providing the response data', () => {
+            httpBackend.expect('GET', `${AppConfig.ENV.API_URL}/user`).respond({name: 'Jimbo'});
+            httpService.custom('GET', '/user').then((resp) => {
+                expect(resp.name).to.equal('Jimbo');
+            });
+            httpBackend.flush();
+        });
+
+        it('should return a promise providing full response in case of an error', () => {
+            httpBackend.expect('GET', `${AppConfig.ENV.API_URL}/error`).respond(
+                500,
+                {error: 123},
+                {'THE-Token': '555'}
+            );
+            httpService.custom('GET', '/error', {}).then(undefined, (resp) => {
+                expect(resp.status).to.equal(500);
+                expect(resp.data.error).to.equal(123);
+                expect(resp.headers('THE-TOKEN')).to.equal('555');
+            });
+            httpBackend.flush();
+        });
+
+    });
+
 });
