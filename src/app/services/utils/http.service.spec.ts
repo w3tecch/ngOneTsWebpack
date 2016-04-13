@@ -68,4 +68,50 @@ describe('http.service', () => {
 
     });
 
+    describe('create', () => {
+
+        it('should send POST request to provided URL with provided data', () => {
+            httpBackend.expect('POST', `${AppConfig.ENV.API_URL}/test`, {name: 'Jimbo'}).respond({});
+            httpService.create('/test', {name: 'Jimbo'});
+            httpBackend.flush();
+        });
+
+        it('should send POST request with given params', () => {
+            const params: any = {
+                name: 'Jimbo',
+                age: 55
+            };
+            httpBackend.expect(
+                'POST',
+                `${AppConfig.ENV.API_URL}/test?age=55&name=Jimbo`,
+                {name: 'Jimbo'}
+            ).respond({});
+            httpService.create('/test', {name: 'Jimbo'}, params);
+            httpBackend.flush();
+        });
+
+        it('should return a promise providing the response data', () => {
+            httpBackend.expect('POST', `${AppConfig.ENV.API_URL}/user`).respond({name: 'Jimbo'});
+            httpService.create('/user', {name: 'Pippi'}).then((resp) => {
+                expect(resp.name).to.equal('Jimbo');
+            });
+            httpBackend.flush();
+        });
+
+        it('should return a promise providing full response in case of an error', () => {
+            httpBackend.expect('POST', `${AppConfig.ENV.API_URL}/error`).respond(
+                500,
+                {error: 123},
+                {'THE-Token': '555'}
+            );
+            httpService.create('/error', {}).then(undefined, (resp) => {
+                expect(resp.status).to.equal(500);
+                expect(resp.data.error).to.equal(123);
+                expect(resp.headers('THE-TOKEN')).to.equal('555');
+            });
+            httpBackend.flush();
+        });
+
+    });
+
 });
