@@ -132,15 +132,12 @@ abstract class AbstractModel implements IAbstractModel {
    */
   protected original: IModelAttributes = {};
 
-  private model: any;
-
   /**
    * Constructor
    * @param model
    * @param attrs
    */
   constructor(attrs?: IModelAttributes) {
-    this.model = this.constructor;
     if (attrs) { this.fill(attrs); } else { this.fillEmpty(); }
   }
 
@@ -276,8 +273,12 @@ abstract class AbstractModel implements IAbstractModel {
    * @param {IModelIdentifier} foreignId
    * @returns {ng.IPromise<IAbstractModel>}
    */
-  public findRelation(localId: IModelIdentifier, relation: any, foreignId: IModelIdentifier, parent: boolean = false)
-  : ng.IPromise<IAbstractModel> {
+  public findRelation<M extends { new(): IAbstractModel }>(
+    localId: IModelIdentifier,
+    relation: M,
+    foreignId: IModelIdentifier,
+    parent: boolean = false
+  ): ng.IPromise<IAbstractModel> {
     let relationModel = new relation();
     if (parent) {
       return AbstractModel.httpService.read(`/${relationModel.rootUrl}/${foreignId}/${this.rootUrl}/${localId}`)
@@ -296,7 +297,8 @@ abstract class AbstractModel implements IAbstractModel {
    * @param {string} relation
    * @returns {ng.IPromise<IAbstractModel[]>}
    */
-  public allRelation(localId: IModelIdentifier, relation: any, parent: boolean = false): ng.IPromise<IAbstractModel[]> {
+  public allRelation<M extends { new(): IAbstractModel }>(localId: IModelIdentifier, relation: M, parent: boolean = false)
+  : ng.IPromise<IAbstractModel[]> {
     let relationModel = new relation();
     if (parent) {
       return AbstractModel.httpService.read(`/${relationModel.rootUrl}/${localId}/${this.rootUrl}`).then(r => this.newModel(r));
@@ -404,8 +406,8 @@ abstract class AbstractModel implements IAbstractModel {
    * @param {*} data
    * @returns {(IAbstractModel | IAbstractModel[])}
    */
-  private newModel(data: any, otherModel?: any): IAbstractModel | IAbstractModel[] {
-    let model = otherModel ? otherModel : this.model;
+  private newModel(data: Array<Object> | Object, otherModel?: any): IAbstractModel | IAbstractModel[] {
+    let model = otherModel ? otherModel : this.constructor;
     return data && Array.isArray(data) && data.map(e => new model(e)) ||
     data && Object.keys(data).length > 0 && new model(data) ||
     data && Array.isArray(data) && [] ||
