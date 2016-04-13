@@ -10,7 +10,13 @@ import HomeController from './home.controller.ts';
 describe('app.home.HomeController', () => {
 
   let homeController: HomeController;
-  before(() => {
+
+  beforeEach(() => {
+    angular.mock.module('app');
+    angular.mock.inject();
+  });
+
+  beforeEach(() => {
     homeController = new HomeController();
   });
 
