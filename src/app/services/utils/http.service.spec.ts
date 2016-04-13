@@ -114,4 +114,93 @@ describe('http.service', () => {
 
     });
 
+    describe('update', () => {
+
+        it('should send PUT request to provided URL with provided data', () => {
+            httpBackend.expect('PUT', `${AppConfig.ENV.API_URL}/test`, {name: 'Jimbo'}).respond({});
+            httpService.update('/test', {name: 'Jimbo'});
+            httpBackend.flush();
+        });
+
+        it('should send PUT request with given params', () => {
+            const params: any = {
+                name: 'Jimbo',
+                age: 55
+            };
+            httpBackend.expect(
+                'PUT',
+                `${AppConfig.ENV.API_URL}/test?age=55&name=Jimbo`,
+                {name: 'Jimbo'}
+            ).respond({});
+            httpService.update('/test', {name: 'Jimbo'}, params);
+            httpBackend.flush();
+        });
+
+        it('should return a promise providing the response data', () => {
+            httpBackend.expect('PUT', `${AppConfig.ENV.API_URL}/user`).respond({name: 'Jimbo'});
+            httpService.update('/user', {name: 'Pippi'}).then((resp) => {
+                expect(resp.name).to.equal('Jimbo');
+            });
+            httpBackend.flush();
+        });
+
+        it('should return a promise providing full response in case of an error', () => {
+            httpBackend.expect('PUT', `${AppConfig.ENV.API_URL}/error`).respond(
+                500,
+                {error: 123},
+                {'THE-Token': '555'}
+            );
+            httpService.update('/error', {}).then(undefined, (resp) => {
+                expect(resp.status).to.equal(500);
+                expect(resp.data.error).to.equal(123);
+                expect(resp.headers('THE-TOKEN')).to.equal('555');
+            });
+            httpBackend.flush();
+        });
+    });
+
+    describe('destroy', () => {
+
+        it('should send DELETE request to provided URL', () => {
+            httpBackend.expect('DELETE', `${AppConfig.ENV.API_URL}/user/99`).respond({});
+            httpService.destroy('/user/99');
+            httpBackend.flush();
+        });
+
+        it('should send DELETE request with given params', () => {
+            const params: any = {
+                name: 'Jimbo',
+                age: 55
+            };
+            httpBackend.expect(
+                'DELETE',
+                `${AppConfig.ENV.API_URL}/test?age=55&name=Jimbo`
+            ).respond({});
+            httpService.destroy('/test', params);
+            httpBackend.flush();
+        });
+
+        it('should return a promise providing the response data', () => {
+            httpBackend.expect('DELETE', `${AppConfig.ENV.API_URL}/user`).respond({name: 'Jimbo'});
+            httpService.destroy('/user').then((resp) => {
+                expect(resp.name).to.equal('Jimbo');
+            });
+            httpBackend.flush();
+        });
+
+        it('should return a promise providing full response in case of an error', () => {
+            httpBackend.expect('DELETE', `${AppConfig.ENV.API_URL}/error`).respond(
+                500,
+                {error: 123},
+                {'THE-Token': '555'}
+            );
+            httpService.destroy('/error').then(undefined, (resp) => {
+                expect(resp.status).to.equal(500);
+                expect(resp.data.error).to.equal(123);
+                expect(resp.headers('THE-TOKEN')).to.equal('555');
+            });
+            httpBackend.flush();
+        });
+    });
+
 });
