@@ -148,6 +148,28 @@ describe('abstract.model', () => {
             expect(updateMethod).to.have.been.calledWith('/users/1', {name: 'Pippi', num: 25});
         });
 
+        it('returns promise that resolves to model', (done) => {
+            httpBackend.expect('POST', /.*\/users/).respond({id: 1});
+            const tModel = new TestModel();
+            tModel.save().then((resp) => {
+                expect(resp).to.be.instanceof(TestModel);
+                done();
+            });
+            httpBackend.flush();
+        });
+
+    });
+
+    describe('destroy', () => {
+
+        it('should trigger DELETE request', () => {
+            const destroyMethod = sinon.spy(httpService, 'destroy');
+            const tModel = new TestModel({id: 99});
+            tModel.destroy();
+            expect(destroyMethod).to.have.been.calledOnce;
+            expect(destroyMethod).to.have.been.calledWith('/users/99');
+        });
+
     });
 
     describe('conversation to type', () => {
