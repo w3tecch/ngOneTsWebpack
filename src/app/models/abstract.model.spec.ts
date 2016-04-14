@@ -130,51 +130,219 @@ describe('abstract.model', () => {
 
     });
 
-    describe('save', () => {
+    describe('CRUD', () => {
 
-        it('should trigger POST request for new models', () => {
-            const createMethod = sinon.spy(httpService, 'create');
-            const tModel = new TestModel({name: 'Pippi', num: 25});
-            tModel.save();
-            expect(createMethod).to.have.been.calledOnce;
-            expect(createMethod).to.have.been.calledWith('/users', {name: 'Pippi', num: 25});
-        });
+        describe('save', () => {
 
-        it('should trigger PUSH request for existing models', () => {
-            const updateMethod = sinon.spy(httpService, 'update');
-            const tModel = new TestModel({id: 1, name: 'Pippi', num: 25});
-            tModel.save();
-            expect(updateMethod).to.have.been.calledOnce;
-            expect(updateMethod).to.have.been.calledWith('/users/1', {name: 'Pippi', num: 25});
-        });
-
-        it('returns promise that resolves to model', (done) => {
-            httpBackend.expect('POST', /.*\/users/).respond({id: 1});
-            const tModel = new TestModel();
-            tModel.save().then((resp) => {
-                expect(resp).to.be.instanceof(TestModel);
-                done();
+            it('should trigger POST request for new models', () => {
+                const createMethod = sinon.spy(httpService, 'create');
+                const tModel = new TestModel({name: 'Pippi', num: 25});
+                tModel.save();
+                expect(createMethod).to.have.been.calledOnce;
+                expect(createMethod).to.have.been.calledWith('/users', {name: 'Pippi', num: 25});
             });
-            httpBackend.flush();
+
+            it('should trigger PUSH request for existing models', () => {
+                const updateMethod = sinon.spy(httpService, 'update');
+                const tModel = new TestModel({id: 1, name: 'Pippi', num: 25});
+                tModel.save();
+                expect(updateMethod).to.have.been.calledOnce;
+                expect(updateMethod).to.have.been.calledWith('/users/1', {name: 'Pippi', num: 25});
+            });
+
+            it('returns promise that resolves to model', (done) => {
+                httpBackend.expect('POST', /.*\/users/).respond({id: 1});
+                const tModel = new TestModel();
+                tModel.save().then((resp) => {
+                    expect(resp).to.be.instanceof(TestModel);
+                    done();
+                });
+                httpBackend.flush();
+            });
+
+        });
+
+        describe('destroy', () => {
+
+            it('should trigger DELETE request', () => {
+                const destroyMethod = sinon.spy(httpService, 'destroy');
+                const tModel = new TestModel({id: 99});
+                tModel.destroy();
+                expect(destroyMethod).to.have.been.calledOnce;
+                expect(destroyMethod).to.have.been.calledWith('/users/99');
+            });
+
+        });
+
+        describe('find', () => {
+
+            it('should trigger corresponding GET request', () => {
+                const readMethod = sinon.spy(httpService, 'read');
+                TestModel.api.find(1);
+                expect(readMethod).to.have.been.calledOnce;
+                expect(readMethod).to.have.been.calledWith('/users/1');
+            });
+
+            it('should deliver a model with correct type', (done) => {
+                httpBackend.expect('GET', /.*\/users\/1$/)
+                    .respond({name: 'userX'});
+                TestModel.api.find(1).then((resp) => {
+                    expect(resp).to.be.instanceof(TestModel);
+                    done();
+                });
+                httpBackend.flush();
+            });
+
+            it('should model with data from the response', (done) => {
+                httpBackend.expect('GET', /.*\/users\/1$/)
+                    .respond({name: 'userY'});
+                TestModel.api.find(1).then((resp) => {
+                    expect(resp.attributes).to.have.property('name', 'userY');
+                    done();
+                });
+                httpBackend.flush();
+            });
+
+        });
+
+        describe('findAll', () => {
+
+            //let defaultGetResponseHandler: angular.mock.IRequestHandler;
+            //
+            //beforeEach(() => {
+            //    defaultGetResponseHandler = httpBackend.when('GET', /\/users/)
+            //        .respond([{name: 'userX'}, {name: 'userY'}], {'A-Token': 'xxx'});
+            //});
+
+            it('should trigger corresponding GET request', () => {
+                const readMethod = sinon.spy(httpService, 'read');
+                TestModel.api.findAll();
+                expect(readMethod).to.have.been.calledOnce;
+                expect(readMethod).to.have.been.calledWith('/users');
+            });
+
+            it('should return a promise that resolves to an array of models', (done) => {
+                httpBackend.expect('GET', /.*\/users$/)
+                    .respond([{name: 'userX'}, {name: 'userY'}], {'A-Token': 'xxx'});
+                TestModel.api.findAll().then((resp) => {
+                    expect(resp).to.be.instanceof(Array);
+                    expect(resp[0]).to.be.instanceof(TestModel);
+                    done();
+                });
+                httpBackend.flush();
+            });
+
+            it('should return all models from the response', (done) => {
+                httpBackend.expect('GET', /.*\/users$/)
+                    .respond([{name: 'userX'}, {name: 'userY'}], {'A-Token': 'xxx'});
+                TestModel.api.findAll().then((resp) => {
+                    expect(resp).to.have.property('length', 2);
+                    expect(resp[0].attributes).to.have.property('name', 'userX');
+                    expect(resp[1].attributes).to.have.property('name', 'userY');
+                    done();
+                });
+                httpBackend.flush();
+            });
+
         });
 
     });
 
-    describe('destroy', () => {
+    describe('relations', () => {
 
-        it('should trigger DELETE request', () => {
-            const destroyMethod = sinon.spy(httpService, 'destroy');
-            const tModel = new TestModel({id: 99});
-            tModel.destroy();
-            expect(destroyMethod).to.have.been.calledOnce;
-            expect(destroyMethod).to.have.been.calledWith('/users/99');
+        class RelationModel extends AbstractModel {
+            public rootUrl: string = 'posts';
+            protected fillAbles (): IModelFillAbles {
+                return {
+                    id: IModelFillAblesTypes.STRING,
+                    text: IModelFillAblesTypes.STRING
+                };
+            }
+        }
+
+        describe('allRelation', () => {
+
+            it('should trigger corresponding GET request', () => {
+                const readMethod = sinon.spy(httpService, 'read');
+                TestModel.api.allRelation(12, RelationModel);
+                expect(readMethod).to.have.been.calledOnce;
+                expect(readMethod).to.have.been.calledWith('/users/12/posts');
+            });
+
+            it('should return promise that resolves to relation models', (done) => {
+                httpBackend.expect('GET', /.*\/users\/12\/posts$/)
+                    .respond([{text: 'bla'}, {text: 'blob'}]);
+                TestModel.api.allRelation(12, RelationModel).then((resp) => {
+                    expect(resp).to.be.instanceof(Array);
+                    expect(resp[0]).to.be.instanceof(RelationModel);
+                    done();
+                });
+                httpBackend.flush();
+            });
+
+            it('parent=true: should trigger corresponding GET request', () => {
+                const readMethod = sinon.spy(httpService, 'read');
+                TestModel.api.allRelation(12, RelationModel, true);
+                expect(readMethod).to.have.been.calledOnce;
+                expect(readMethod).to.have.been.calledWith('/posts/12/users');
+            });
+
+            it('parent=true: should return promise that resolves to models', (done) => {
+                httpBackend.expect('GET', /.*\/posts\/12\/users$/)
+                    .respond([{name: 'userX'}, {name: 'userY'}]);
+                TestModel.api.allRelation(12, RelationModel, true).then((resp) => {
+                    expect(resp).to.be.instanceof(Array);
+                    expect(resp[0]).to.be.instanceof(TestModel);
+                    done();
+                });
+                httpBackend.flush();
+            });
+
+        });
+
+        describe('findRelation', () => {
+
+            it('should trigger corresponding GET request', () => {
+                const readMethod = sinon.spy(httpService, 'read');
+                TestModel.api.findRelation(12, RelationModel, 66);
+                expect(readMethod).to.have.been.calledOnce;
+                expect(readMethod).to.have.been.calledWith('/users/12/posts/66');
+            });
+
+            it('should return promise that resolves to relation model', (done) => {
+                httpBackend.expect('GET', /.*\/users\/12\/posts\/66$/)
+                    .respond({text: 'bla'});
+                TestModel.api.findRelation(12, RelationModel, 66).then((resp) => {
+                    expect(resp).to.be.instanceof(RelationModel);
+                    done();
+                });
+                httpBackend.flush();
+            });
+
+            it('parent=true: should trigger corresponding GET request', () => {
+                const readMethod = sinon.spy(httpService, 'read');
+                TestModel.api.findRelation(12, RelationModel, 66, true);
+                expect(readMethod).to.have.been.calledOnce;
+                expect(readMethod).to.have.been.calledWith('/posts/66/users/12');
+            });
+
+            it('parent=true: should return promise that resolves to model', (done) => {
+                httpBackend.expect('GET', /.*\/posts\/66\/users\/12$/)
+                    .respond({name: 'userX'});
+                TestModel.api.findRelation(12, RelationModel, 66, true).then((resp) => {
+                    expect(resp).to.be.instanceof(TestModel);
+                    done();
+                });
+                httpBackend.flush();
+            });
+
         });
 
     });
 
     describe('conversation to type', () => {
 
-        describe('should support String', () => {
+        describe('String', () => {
 
             const testData = [
                 ['boolean', true, 'true'],
@@ -219,78 +387,6 @@ describe('abstract.model', () => {
             const tModel = new TestModel({floatNum: '1.23'});
             expect(tModel.attributes).to.have.property('floatNum', 1.23);
             expect(tModel.attributes.floatNum).to.be.a('number');
-        });
-
-    });
-
-    describe('find', () => {
-
-        it('should trigger corresponding GET request', () => {
-            const readMethod = sinon.spy(httpService, 'read');
-            TestModel.api.find(1);
-            expect(readMethod).to.have.been.calledOnce;
-            expect(readMethod).to.have.been.calledWith('/users/1');
-        });
-
-        it('should deliver a model with correct type', (done) => {
-            httpBackend.expect('GET', /.*\/users\/1$/)
-                .respond({name: 'userX'});
-            TestModel.api.find(1).then((resp) => {
-                expect(resp).to.be.instanceof(TestModel);
-                done();
-            });
-            httpBackend.flush();
-        });
-
-        it('should model with data from the response', (done) => {
-            httpBackend.expect('GET', /.*\/users\/1$/)
-                .respond({name: 'userY'});
-            TestModel.api.find(1).then((resp) => {
-                expect(resp.attributes).to.have.property('name', 'userY');
-                done();
-            });
-            httpBackend.flush();
-        });
-
-    });
-
-    describe('findAll', () => {
-
-        //let defaultGetResponseHandler: angular.mock.IRequestHandler;
-        //
-        //beforeEach(() => {
-        //    defaultGetResponseHandler = httpBackend.when('GET', /\/users/)
-        //        .respond([{name: 'userX'}, {name: 'userY'}], {'A-Token': 'xxx'});
-        //});
-
-        it('should trigger corresponding GET request', () => {
-            const readMethod = sinon.spy(httpService, 'read');
-            TestModel.api.findAll();
-            expect(readMethod).to.have.been.calledOnce;
-            expect(readMethod).to.have.been.calledWith('/users');
-        });
-
-        it('should return a promise that resolves to an array of models', (done) => {
-            httpBackend.expect('GET', /.*\/users$/)
-                .respond([{name: 'userX'}, {name: 'userY'}], {'A-Token': 'xxx'});
-            TestModel.api.findAll().then((resp) => {
-                expect(resp).to.be.instanceof(Array);
-                expect(resp[0]).to.be.instanceof(TestModel);
-                done();
-            });
-            httpBackend.flush();
-        });
-
-        it('should return all models from the response', (done) => {
-            httpBackend.expect('GET', /.*\/users$/)
-                .respond([{name: 'userX'}, {name: 'userY'}], {'A-Token': 'xxx'});
-            TestModel.api.findAll().then((resp) => {
-                expect(resp).to.have.property('length', 2);
-                expect(resp[0].attributes).to.have.property('name', 'userX');
-                expect(resp[1].attributes).to.have.property('name', 'userY');
-                done();
-            });
-            httpBackend.flush();
         });
 
     });
