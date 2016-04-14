@@ -13,6 +13,10 @@ module.exports = function karmaConfig (config) {
       'mocha', 'chai', 'sinon'
     ],
 
+    client: {
+      args: ['--grep', config.grep || '']
+    },
+
     // list of files to exclude
     exclude: [ ],
 
