@@ -146,7 +146,7 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    *
    * @returns {boolean}
    */
-  public isNew(): boolean { return !this.getId(); }
+  public isNew(): boolean { return this.getId() === undefined; }
 
   /**
    * Find one model
