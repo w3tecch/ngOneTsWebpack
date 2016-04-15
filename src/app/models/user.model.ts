@@ -21,7 +21,7 @@ export interface IUserModel extends IAbstractModel<IUserModelAttributes> {}
  * @extends {AbstractModel}
  * @implements {ITaskModel}
  */
-class UserModel extends AbstractModel<IUserModelAttributes, IUserModel> {
+class UserModel extends AbstractModel<IUserModelAttributes, IUserModel> implements IUserModel {
 
   public static api = new UserModel();
 
