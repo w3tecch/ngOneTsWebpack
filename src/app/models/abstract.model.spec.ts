@@ -22,7 +22,6 @@ interface ITestModelAttributes {
 interface ITestModel extends IAbstractModel<ITestModelAttributes> {}
 
 class TestModel extends AbstractModel<ITestModelAttributes, ITestModel> {
-    //public attributes: ITestModelAttributes;
     public static api = new TestModel();
     public rootUrl = 'users';
     protected fillAbles(): IModelFillAbles {
@@ -35,15 +34,6 @@ class TestModel extends AbstractModel<ITestModelAttributes, ITestModel> {
         };
     }
 }
-
-// TODO AbstractModel.toArray() ? (-> .attributes)
-
-// TODO bulkUpdateAttrs: return type: IModelAttributes vs list of attrs
-
-// TODO fill: return type necessary?, parameter type (-> Object)
-// TODO fillEmpty: return type
-
-// TODO findRelations: (-> types for relations)
 
 describe('abstract.model', () => {
 
