@@ -48,7 +48,7 @@ export interface IAbstractModel<K> {
   destroy<T>(): ng.IPromise<T>;
   resetAttributes(): K;
   toArray(): K;
-  bulkUpdateAttrs(list: Object): Array<any>;
+  bulkUpdateAttrs(list: Object): K;
   getId(): IModelIdentifier;
 }
 
@@ -232,8 +232,9 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    * @param {IModelAttributes} list
    * @returns {IModelAttributes}
    */
-  public bulkUpdateAttrs(list: Object): Array<any> {
-    return Object.keys(list).map(key => this.attributes[key] = list[key]);
+  public bulkUpdateAttrs(list: Object): K {
+    Object.keys(list).map(key => this.attributes[key] = list[key]);
+    return this.attributes;
   }
 
   /**
@@ -437,8 +438,8 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    * @private
    * @returns {IModelAttributes}
    */
-  private fillEmpty(): Array<any> {
-    return Object.keys(this.fillAbles()).map(key => this.attributes[key] = undefined);
+  private fillEmpty(): void {
+    Object.keys(this.fillAbles()).map(key => this.attributes[key] = undefined);
   }
 
   /**
