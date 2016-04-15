@@ -279,7 +279,7 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
     relation:  { new(): IAbstractModel<any> },
     foreignId: IModelIdentifier,
     parent: boolean = false
-  ): ng.IPromise<J> {
+  ): ng.IPromise<IAbstractModel<any>> {
     let relationModel = new relation();
     if (parent) {
       return AbstractModel.httpService.read(`/${relationModel.rootUrl}/${foreignId}/${this.rootUrl}/${localId}`)
@@ -302,7 +302,7 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
       localId: IModelIdentifier,
       relation: { new(): IAbstractModel<any> },
       parent: boolean = false
-  ): ng.IPromise<J[]> {
+  ): ng.IPromise<IAbstractModel<any>[]> {
     let relationModel = new relation();
     if (parent) {
       return AbstractModel.httpService.read(`/${relationModel.rootUrl}/${localId}/${this.rootUrl}`).then(r => this.newModel(r));
@@ -410,7 +410,7 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    * @param {*} data
    * @returns {(IAbstractModel | IAbstractModel[])}
    */
-  private newModel(data: Array<Object> | Object, otherModel?: any): J | J[] {
+  private newModel(data: Array<Object> | Object, otherModel?: any): IAbstractModel<any> | IAbstractModel<any>[] {
     let model = otherModel ? otherModel : this.constructor;
     return data && Array.isArray(data) && data.map(e => new model(e)) ||
     data && Object.keys(data).length > 0 && new model(data) ||
