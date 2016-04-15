@@ -12,9 +12,7 @@ export interface IUserModelAttributes {
   phone: string;
 }
 
-export interface IUserModel extends IAbstractModel {
-  attributes: IUserModelAttributes;
-}
+export interface IUserModel extends IAbstractModel<IUserModelAttributes> {}
 
 /**
  * The Task model class
@@ -23,7 +21,7 @@ export interface IUserModel extends IAbstractModel {
  * @extends {AbstractModel}
  * @implements {ITaskModel}
  */
-class UserModel extends AbstractModel implements IUserModel {
+class UserModel extends AbstractModel<IUserModelAttributes, IUserModel> {
 
   public static api = new UserModel();
 
