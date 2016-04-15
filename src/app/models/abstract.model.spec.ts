@@ -108,8 +108,7 @@ describe('abstract.model', () => {
                 httpBackend.flush();
             });
 
-            //TODO FIX
-            xit('should return true for falsy valid ID', (done) => {
+            it('should return true for falsy valid ID', (done) => {
                 httpBackend.expect('POST', /.*\/users/).respond({id: 0});
                 const tModel = new TestModel();
                 tModel.save().then((resp) => {
@@ -199,13 +198,6 @@ describe('abstract.model', () => {
         });
 
         describe('findAll', () => {
-
-            //let defaultGetResponseHandler: angular.mock.IRequestHandler;
-            //
-            //beforeEach(() => {
-            //    defaultGetResponseHandler = httpBackend.when('GET', /\/users/)
-            //        .respond([{name: 'userX'}, {name: 'userY'}], {'A-Token': 'xxx'});
-            //});
 
             it('should trigger corresponding GET request', () => {
                 const readMethod = sinon.spy(httpService, 'read');
