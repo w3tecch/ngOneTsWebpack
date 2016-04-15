@@ -48,9 +48,6 @@ class HomeController {
     userPromise.then(user => console.log(user) && user);
 
     userPromise = userPromise.then((user: UserModel) => {
-      //TODO do these methods need specific type??
-      //TODO how should they behave ?
-      //TODO what should they return?
       user.bulkUpdateAttrs({ name: 'Dave'});
       return user.save();
     });
