@@ -11,9 +11,7 @@ export interface ITodoModelAttributes {
   completed: boolean;
 }
 
-export interface ITodoModel extends IAbstractModel {
-  attributes: ITodoModelAttributes;
-}
+export interface ITodoModel extends IAbstractModel<ITodoModelAttributes> {}
 
 /**
  * The Task model class
@@ -22,7 +20,7 @@ export interface ITodoModel extends IAbstractModel {
  * @extends {AbstractModel}
  * @implements {ITaskModel}
  */
-class TodoModel extends AbstractModel implements ITodoModel {
+class TodoModel extends AbstractModel<ITodoModelAttributes, ITodoModel> implements ITodoModel {
 
   public static api = new TodoModel();
 
