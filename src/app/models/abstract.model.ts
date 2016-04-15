@@ -32,7 +32,7 @@ export enum IModelFillAblesTypes {
 
 export type IModelIdentifier = string | number;
 
-export type IModelAttributes = any;
+export type IModelAttributes = Object;
 
 /**
  * The Abstract model interface
@@ -40,15 +40,15 @@ export type IModelAttributes = any;
  * @export
  * @interface IAbstractModel
  */
-export interface IAbstractModel {
+export interface IAbstractModel<K> {
   rootUrl: string;
-  attributes: IModelAttributes;
+  attributes: K;
   isNew(): boolean;
   save<T>(): ng.IPromise<T>;
   destroy<T>(): ng.IPromise<T>;
-  resetAttributes(): IModelAttributes;
-  toArray(): IModelAttributes;
-  bulkUpdateAttrs(list: IModelAttributes): IModelAttributes;
+  resetAttributes(): K;
+  toArray(): K;
+  bulkUpdateAttrs(list: Object): Array<any>;
   getId(): IModelIdentifier;
 }
 
@@ -63,7 +63,7 @@ interface IConstruct {
  * @class AbstractModel
  * @implements {IAbstractModel}
  */
-abstract class AbstractModel implements IAbstractModel {
+abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractModel<K>> implements IAbstractModel<K> {
 
   /**
    * HttpService
@@ -86,7 +86,7 @@ abstract class AbstractModel implements IAbstractModel {
    *
    * @type {IModelAttributes}
    */
-  public attributes: IModelAttributes = {};
+  public attributes: K = <K>{};
 
   /**
    * Identifier
@@ -130,14 +130,14 @@ abstract class AbstractModel implements IAbstractModel {
    * @protected
    * @type {IModelAttributes}
    */
-  protected original: IModelAttributes = {};
+  protected original: K = <K>{};
 
   /**
    * Constructor
    * @param model
    * @param attrs
    */
-  constructor(attrs?: IModelAttributes) {
+  constructor(attrs?: Object) {
     if (attrs) { this.fill(attrs); } else { this.fillEmpty(); }
   }
 
@@ -154,7 +154,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @param {IModelIdentifier} id
    * @returns {ng.IPromise<IAbstractModel>}
    */
-  public find(id: IModelIdentifier): ng.IPromise<IAbstractModel> {
+  public find(id: IModelIdentifier): ng.IPromise<J> {
     return this.get(id);
   }
 
@@ -163,7 +163,7 @@ abstract class AbstractModel implements IAbstractModel {
    *
    * @returns {ng.IPromise<IAbstractModel[]>}
    */
-  public findAll(): ng.IPromise<IAbstractModel[]> {
+  public findAll(): ng.IPromise<J[]> {
     return this.getAll();
   }
 
@@ -173,7 +173,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @param {string} url This will replace the complete url after the base endpoint
    * @returns {(ng.IPromise<IAbstractModel | IAbstractModel[]>)}
    */
-  public findCustom(url: string): ng.IPromise<IAbstractModel | IAbstractModel[]> {
+  public findCustom(url: string): ng.IPromise<J | J[]> {
     return this.customGet(url);
   }
 
@@ -189,7 +189,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @returns {(ng.IPromise<IAbstractModel | IAbstractModel[] | void>)} Return a promise
    */
   public customRequest(method: string, url: string, params, data, headers, skipAuth: boolean)
-  : ng.IPromise<IAbstractModel | IAbstractModel[] | void> {
+  : ng.IPromise<J | J[] | void> {
     return this.customRequestCall(method, url, params, data, headers, skipAuth);
   }
 
@@ -198,7 +198,7 @@ abstract class AbstractModel implements IAbstractModel {
    *
    * @returns {ng.IPromise<IAbstractModel>}
    */
-  public save(): ng.IPromise<IAbstractModel> {
+  public save(): ng.IPromise<J> {
     return this.isNew() ?
       this.create(this.convertToHttpData(this.toArray())) : this.update(this.convertToHttpData(this.toArray()));
   }
@@ -217,14 +217,14 @@ abstract class AbstractModel implements IAbstractModel {
    *
    * @returns {IModelAttributes}
    */
-  public resetAttributes(): IModelAttributes { return this.attributes = angular.copy(this.original); }
+  public resetAttributes(): K { return this.attributes = angular.copy(this.original); }
 
   /**
    * Convert the actin model to an array
    *
    * @returns {IModelAttributes}
    */
-  public toArray(): IModelAttributes { return this.attributes; }
+  public toArray(): K { return this.attributes; }
 
   /**
    * You can update multipe attributes at once
@@ -232,7 +232,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @param {IModelAttributes} list
    * @returns {IModelAttributes}
    */
-  public bulkUpdateAttrs(list: IModelAttributes): IModelAttributes {
+  public bulkUpdateAttrs(list: Object): Array<any> {
     return Object.keys(list).map(key => this.attributes[key] = list[key]);
   }
 
@@ -250,7 +250,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @param {IModelIdentifier} id
    * @returns {ng.IPromise<IAbstractModel>}
    */
-  protected get(id: IModelIdentifier): ng.IPromise<IAbstractModel> {
+  protected get(id: IModelIdentifier): ng.IPromise<J> {
     return AbstractModel.httpService.read(`/${this.rootUrl}/${id}`).then(r => this.newModel(r));
   }
 
@@ -260,7 +260,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @protected
    * @returns {ng.IPromise<IAbstractModel[]>}
    */
-  protected getAll(): ng.IPromise<IAbstractModel[]> {
+  protected getAll(): ng.IPromise<J[]> {
     return AbstractModel.httpService.read(`/${this.rootUrl}`).then(r => this.newModel(r));
   }
 
@@ -278,7 +278,7 @@ abstract class AbstractModel implements IAbstractModel {
     relation: M,
     foreignId: IModelIdentifier,
     parent: boolean = false
-  ): ng.IPromise<IAbstractModel> {
+  ): ng.IPromise<J> {
     let relationModel = new relation();
     if (parent) {
       return AbstractModel.httpService.read(`/${relationModel.rootUrl}/${foreignId}/${this.rootUrl}/${localId}`)
@@ -298,7 +298,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @returns {ng.IPromise<IAbstractModel[]>}
    */
   public allRelation<M extends { new(): IAbstractModel }>(localId: IModelIdentifier, relation: M, parent: boolean = false)
-  : ng.IPromise<IAbstractModel[]> {
+  : ng.IPromise<J[]> {
     let relationModel = new relation();
     if (parent) {
       return AbstractModel.httpService.read(`/${relationModel.rootUrl}/${localId}/${this.rootUrl}`).then(r => this.newModel(r));
@@ -314,7 +314,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @param {string} url
    * @returns {(ng.IPromise<IAbstractModel | IAbstractModel[]>)}
    */
-  protected customGet(url: string): ng.IPromise<IAbstractModel | IAbstractModel[]> {
+  protected customGet(url: string): ng.IPromise<J | J[]> {
     return AbstractModel.httpService.read(url).then(r => this.newModel(r));
   }
 
@@ -331,7 +331,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @returns {(ng.IPromise<IAbstractModel | IAbstractModel[] | void>)} Return a promise
    */
   protected customRequestCall(method: string, url: string, params, data, headers, skipAuth: boolean)
-  : ng.IPromise<IAbstractModel | IAbstractModel[] | void> {
+  : ng.IPromise<J | J[] | void> {
     return AbstractModel.httpService.custom(method, url, params, data, headers, skipAuth);
   }
 
@@ -342,7 +342,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @param {IModelAttributes} data
    * @returns {ng.IPromise<IAbstractModel>}
    */
-  protected create(data: IModelAttributes): ng.IPromise<IAbstractModel> {
+  protected create(data: K): ng.IPromise<J> {
     return AbstractModel.httpService.create(`/${this.rootUrl}`, data).then(r => this.newModel(r));
   }
 
@@ -353,7 +353,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @param {IModelAttributes} data
    * @returns {ng.IPromise<IAbstractModel>}
    */
-  protected update(data: IModelAttributes): ng.IPromise<IAbstractModel> {
+  protected update(data: K): ng.IPromise<J> {
     return AbstractModel.httpService.update(`/${this.rootUrl}/${this.getId()}`, data).then(r => this.newModel(r));
   }
 
@@ -384,7 +384,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @param {IModelAttributes} attrs
    * @returns {IModelAttributes}
    */
-  private convertToHttpData(attrs: IModelAttributes): IModelAttributes {
+  private convertToHttpData(attrs: K): K {
     let tempHttpData = {};
     Object.keys(this.fillAbles())
       .forEach(key => {
@@ -396,7 +396,7 @@ abstract class AbstractModel implements IAbstractModel {
       delete tempHttpData[this.identifier];
     }
     this.httpNotSendData.forEach(i => delete tempHttpData[i]);
-    return tempHttpData;
+    return <K>tempHttpData;
   };
 
   /**
@@ -406,7 +406,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @param {*} data
    * @returns {(IAbstractModel | IAbstractModel[])}
    */
-  private newModel(data: Array<Object> | Object, otherModel?: any): IAbstractModel | IAbstractModel[] {
+  private newModel(data: Array<Object> | Object, otherModel?: any): J | J[] {
     let model = otherModel ? otherModel : this.constructor;
     return data && Array.isArray(data) && data.map(e => new model(e)) ||
     data && Object.keys(data).length > 0 && new model(data) ||
@@ -422,7 +422,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @param {IModelAttributes} attrs
    * @returns {IModelAttributes}
    */
-  private fill(attrs: IModelAttributes): IModelAttributes {
+  private fill(attrs: Object): K {
     return attrs && Object.keys(this.fillAbles())
       .map(key => angular.isDefined(attrs[key]) && (this.original[key] = this.convertToType(attrs[key], this.fillAbles()[key]))) &&
       this.resetAttributes();
@@ -434,7 +434,7 @@ abstract class AbstractModel implements IAbstractModel {
    * @private
    * @returns {IModelAttributes}
    */
-  private fillEmpty(): IModelAttributes {
+  private fillEmpty(): Array<any> {
     return Object.keys(this.fillAbles()).map(key => this.attributes[key] = undefined);
   }
 

@@ -4,7 +4,7 @@
 import Logger from './../../common/services/utils/logger.service.ts';
 import {mediatorService} from './../../common/services/utils/mediator.service.ts';
 import UserModel from './../../models/user.model.ts';
-import TodoModel from './../../models/todo.model.ts';
+//import TodoModel from './../../models/todo.model.ts';
 
 /**
  * An example Controller
@@ -48,6 +48,9 @@ class HomeController {
     userPromise.then(user => console.log(user) && user);
 
     userPromise = userPromise.then((user: UserModel) => {
+      //TODO do these methods need specific type??
+      //TODO how should they behave ?
+      //TODO what should they return?
       user.bulkUpdateAttrs({ name: 'Dave'});
       return user.save();
     });
@@ -60,11 +63,11 @@ class HomeController {
     userPromiseD.then(resp => console.log(resp))
       .catch(err => console.log(err));
 
-    let userTodo = UserModel.api.allRelation(1, TodoModel);
-    userTodo.then((todos: TodoModel[]) => console.log(todos));
-
-    let userTodo1 = UserModel.api.findRelation(1, TodoModel, 1);
-    userTodo1.then((todos: TodoModel) => console.log(todos));
+    //let userTodo = UserModel.api.allRelation(1, TodoModel);
+    //userTodo.then((todos: TodoModel[]) => console.log(todos));
+    //
+    //let userTodo1 = UserModel.api.findRelation(1, TodoModel, 1);
+    //userTodo1.then((todos: TodoModel) => console.log(todos));
   }
 
   /**
