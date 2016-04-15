@@ -35,12 +35,17 @@ class TestModel extends AbstractModel {
     }
 }
 
-//TODO AbstractModel.toArray() ? (-> .attributes)
+// TODO AbstractModel.toArray() ? (-> .attributes)
 
-//TODO CRUD
-//TODO findRelations (-> types for relations)
+// TODO bulkUpdateAttrs: return type: IModelAttributes vs list of attrs
 
-//TODO handling of response errors
+// TODO fill: return type necessary?, parameter type (-> Object)
+// TODO fillEmpty: return type
+
+// TODO findRelations: (-> types for relations)
+
+// IModelAttributes ->
+
 
 describe('abstract.model', () => {
 
