@@ -334,6 +334,32 @@ describe('abstract.model', () => {
 
     describe('conversation to type', () => {
 
+        interface IComplexModelAttrs {
+            name: string;
+            config: {
+                env: string;
+            };
+            languages: Array<string>;
+            num: number;
+            active: boolean;
+            floatNum: number;
+        }
+        interface IComplexModel extends IAbstractModel<IComplexModelAttrs> {};
+        class ComplexModel extends AbstractModel<IComplexModelAttrs, IComplexModel> {
+            public rootUrl = 'complex';
+            public static api = new ComplexModel();
+            protected fillAbles(): IModelFillAbles {
+                return {
+                    name: IModelFillAblesTypes.STRING,
+                    config: IModelFillAblesTypes.OBJECT,
+                    languages: IModelFillAblesTypes.ARRAY,
+                    num: IModelFillAblesTypes.NUMBER,
+                    active: IModelFillAblesTypes.BOOL,
+                    floatNum: IModelFillAblesTypes.FLOAT
+                };
+            }
+        }
+
         describe('String', () => {
 
             const testData = [
@@ -345,41 +371,111 @@ describe('abstract.model', () => {
             testData.forEach((data) => {
                 const [fromType, given, expected] = data;
                 it(`should support String from ${fromType}`, () => {
-                    const tModel = new TestModel({name: given});
-                    tModel.attributes.num = 3.33;
-                    expect(tModel.attributes).to.have.property('name', expected);
-                    expect(tModel.attributes.name).to.be.a('string');
+                    const model = new ComplexModel({name: given});
+                    expect(model.attributes).to.have.property('name', expected);
+                    expect(model.attributes.name).to.be.a('string');
                 });
             });
 
             //TODO FIX: null could appear
             xit(`should support String from null`, () => {
                 /* tslint:disable no-null-keyword*/
-                const tModel = new TestModel({name: null});
+                const model = new ComplexModel({name: null});
                 /* tslint:enable */
-                expect(tModel.attributes).to.have.property('name', '');
-                expect(tModel.attributes.name).to.be.a('string');
+                expect(model.attributes).to.have.property('name', '');
+                expect(model.attributes.name).to.be.a('string');
             });
 
         });
 
         it('should support Number', () => {
-            const tModel = new TestModel({num: '22'});
-            expect(tModel.attributes).to.have.property('num', 22);
-            expect(tModel.attributes.num).to.be.a('number');
+            const model = new ComplexModel({num: '22'});
+            expect(model.attributes).to.have.property('num', 22);
+            expect(model.attributes.num).to.be.a('number');
         });
 
         it('should support Boolean', () => {
-            const tModel = new TestModel({active: 'true'});
-            expect(tModel.attributes).to.have.property('active', true);
-            expect(tModel.attributes.active).to.be.a('boolean');
+            const model = new ComplexModel({active: 'true'});
+            expect(model.attributes).to.have.property('active', true);
+            expect(model.attributes.active).to.be.a('boolean');
         });
 
         it('should support Float', () => {
-            const tModel = new TestModel({floatNum: '1.23'});
-            expect(tModel.attributes).to.have.property('floatNum', 1.23);
-            expect(tModel.attributes.floatNum).to.be.a('number');
+            const model = new ComplexModel({floatNum: '1.23'});
+            expect(model.attributes).to.have.property('floatNum', 1.23);
+            expect(model.attributes.floatNum).to.be.a('number');
         });
+
+        describe('Object', () => {
+
+            const testData = [
+                ['object', {env: 'dev-testing'}],
+                ['json-string', '{"env": "dev-testing"}']
+            ];
+
+            testData.forEach((data) => {
+                const [fromType, given] = data;
+                it(`should support Object from ${fromType}`, () => {
+                    const model = new ComplexModel({config: given});
+                    expect(model.attributes.config).to.be.a('object');
+                    expect(model.attributes.config.env).to.be.a('string');
+                    expect(model.attributes.config).to.have.property('env', 'dev-testing');
+                });
+            });
+
+            it(`should throw Error if not json string or object`, () => {
+                expect(() => new ComplexModel({config: 99})).to.throw(TypeError);
+            });
+
+        });
+
+        describe('Array', () => {
+            it('array as property', () => {
+                const model = new ComplexModel({languages: ['DE', 'EN']});
+                expect(model.attributes.languages).to.be.instanceOf(Array);
+            });
+        });
+
+    });
+
+    describe('conversion to http', () => {
+
+        beforeEach(() => {
+            httpBackend.when('GET', /.*\/complex\/1$/).respond(
+                {
+                    name: 'complex model name',
+                    config: {
+                        env: 'dev-testing'
+                    },
+                    languages: ['DE', 'EN']
+                }
+            );
+        });
+
+        //describe('Object', () => {
+        //    it('object as property', (done) => {
+        //        ComplexModel.api.find(1)
+        //            .then((cm: IComplexModel) => {
+        //                expect(cm.attributes.config).to.be.instanceof(Object);
+        //                expect(cm.attributes.config.env).to.be.a('string');
+        //                expect(cm.attributes.config).to.have.property('env', 'dev-testing');
+        //                done();
+        //            });
+        //        httpBackend.flush();
+        //    });
+        //});
+        //
+        //
+        //
+        //it('array as property', (done) => {
+        //
+        //    ComplexModel.api.find(1)
+        //        .then((cm: IComplexModel) => {
+        //            expect(cm.attributes.languages).to.be.instanceOf(Array);
+        //            done();
+        //        });
+        //    httpBackend.flush();
+        //});
 
     });
 

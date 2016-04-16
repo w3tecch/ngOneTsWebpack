@@ -27,7 +27,8 @@ export enum IModelFillAblesTypes {
   BOOL,
   DATE,
   TIME,
-  OBJECT
+  OBJECT,
+  ARRAY
 }
 
 export type IModelIdentifier = string | number;
@@ -470,7 +471,13 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
         returnValue = moment(value);
         break;
       case IModelFillAblesTypes.OBJECT:
-        returnValue = JSON.parse(value);
+          if (typeof value === 'string') {
+            returnValue = JSON.parse(value);
+          } else if (angular.isObject(value)) {
+            returnValue = value;
+          } else {
+            throw new TypeError(`Conversion from type ${typeof value} to object not supported`);
+          }
         break;
       default:
         returnValue = value;
