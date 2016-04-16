@@ -473,12 +473,19 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
       case IModelFillAblesTypes.OBJECT:
           if (typeof value === 'string') {
             returnValue = JSON.parse(value);
-          } else if (angular.isObject(value)) {
+          } else if (angular.isObject(value) && !angular.isArray(value)) {
             returnValue = value;
           } else {
             throw new TypeError(`Conversion from type ${typeof value} to object not supported`);
           }
         break;
+      case IModelFillAblesTypes.ARRAY:
+          if (angular.isArray(value)) {
+            returnValue = value;
+          } else {
+            throw new TypeError(`Conversion from type ${typeof value} to array not supported`);
+          }
+          break;
       default:
         returnValue = value;
     }

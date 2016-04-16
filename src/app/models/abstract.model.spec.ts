@@ -423,16 +423,32 @@ describe('abstract.model', () => {
                 });
             });
 
-            it(`should throw Error if not json string or object`, () => {
+            it(`should throw Error if input is not json string or object`, () => {
                 expect(() => new ComplexModel({config: 99})).to.throw(TypeError);
+            });
+
+            it(`should throw Error if input is array`, () => {
+                expect(() => new ComplexModel({config: [1, 2]})).to.throw(TypeError);
             });
 
         });
 
         describe('Array', () => {
-            it('array as property', () => {
+            it('should support Array from array', () => {
                 const model = new ComplexModel({languages: ['DE', 'EN']});
                 expect(model.attributes.languages).to.be.instanceOf(Array);
+                expect(model.attributes.languages).to.have.property('length', 2);
+                expect(model.attributes.languages[0]).to.equal('DE');
+                expect(model.attributes.languages[1]).to.equal('EN');
+            });
+            /* tslint:disable no-null-keyword*/
+            const invalidTypes = [22, true, {}, 'test', null];
+            /* tslint:enable no-null-keyword*/
+
+            invalidTypes.forEach((invalidType) => {
+                it(`should throw error if the input type is ${typeof invalidType}`, () => {
+                    expect(() => new ComplexModel({languages: invalidType})).to.throw(TypeError);
+                });
             });
         });
 
