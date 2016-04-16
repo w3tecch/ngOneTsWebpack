@@ -1,7 +1,7 @@
 /**
  * Import dependencies
  */
-import AppConfig from './../../app.config.ts';
+import AppConfig from './../../../app.config.ts';
 
 /**
  * @name IHttpUtilService

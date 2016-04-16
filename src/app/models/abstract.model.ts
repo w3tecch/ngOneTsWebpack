@@ -2,7 +2,7 @@
  * Import dependencies
  */
 import * as moment from 'moment';
-import { IHttpUtilService } from './../services/utils/http.service.ts';
+import { IHttpUtilService } from './../common/services/utils/http.service.ts';
 
 /**
  * The attributes interface

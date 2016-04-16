@@ -5,8 +5,8 @@ chai.use(sinonChai);
 const expect = chai.expect;
 
 import AbstractModel, {IModelFillAbles, IModelFillAblesTypes, IAbstractModel} from './abstract.model.ts';
-import {IHttpUtilService} from '../services/utils/http.service.ts';
-import {httpService as httpServiceName} from '../services/services.module.ts';
+import {IHttpUtilService} from '../common/services/utils/http.service.ts';
+import {httpService as httpServiceName} from '../common/services/services.module.ts';
 
 interface ITestModelAttributes {
     id: number;

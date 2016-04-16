@@ -1,7 +1,7 @@
 /**
  * Import dependencies
  */
-import {httpService} from './../services/services.module.ts';
+import {httpService} from './../common/services/services.module.ts';
 import AbstractModel from './../models/abstract.model.ts';
 
 const angularModel = (httpService) => {

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import servicesModule from '../services.module.ts';
 import {IHttpUtilService} from './http.service.ts';
 import {httpService as httpServiceName} from '../services.module.ts';
-import AppConfig from '../../app.config.ts';
+import AppConfig from '../../../app.config.ts';
 
 describe('http.service', () => {
 
