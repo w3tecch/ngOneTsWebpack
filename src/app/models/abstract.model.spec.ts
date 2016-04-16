@@ -496,3 +496,37 @@ describe('abstract.model', () => {
     });
 
 });
+
+describe('abstract.model-invalid response data', () => {
+    let httpService: IHttpUtilService;
+    let httpBackend: ng.IHttpBackendService;
+
+    beforeEach(() => {
+        angular.mock.module('app',
+            // set mocked exceptionHandler mode to log, otherwise errors will be re-thrown
+            // which breaks the promise chain
+            $exceptionHandlerProvider => $exceptionHandlerProvider.mode('log'));
+        angular.mock.inject(['$httpBackend', httpServiceName,
+            ($httpBackend: ng.IHttpBackendService, _httpService_: IHttpUtilService) => {
+                httpBackend = $httpBackend;
+                httpService = _httpService_;
+            }]);
+    });
+
+    describe('convert to type fails', () => {
+
+        it('handle invalid response data', (done) => {
+            httpBackend.when('GET', /.*\/complex\/1$/).respond(
+                {
+                    /* tslint:disable no-null-keyword*/
+                    name: null
+                    /* tslint:enable no-null-keyword*/
+                }
+            );
+            TestModel.api.find(1).catch(() => {
+                done();
+            });
+            httpBackend.flush();
+        });
+    });
+});
