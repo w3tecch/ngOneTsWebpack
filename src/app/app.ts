@@ -26,6 +26,7 @@ import {default as Home} from './modules/home/home.module.ts';
 import {default as Layout} from './layout/layout.module.ts';
 
 import AppConfig from './app.config.ts';
+import Logger from './common/services/utils/logger.service.ts';
 
 /**
  * Define your app
@@ -51,5 +52,8 @@ angular
     // App modules
     Home
   ])
-  .run(() => console.log(AppConfig));
+  .run(() => {
+      const logger = new Logger('app.ts').debug('AppConfig');
+      logger(AppConfig);
+  });
 
