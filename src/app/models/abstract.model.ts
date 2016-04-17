@@ -444,6 +444,20 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
   }
 
   /**
+   * Creates a TypeError with generic error message about failed type conversion.
+   *
+   * @private
+   * @param {*} value
+   * @param {IModelFillAblesTypes} toType
+   * @returns {TypeError}
+   */
+  private createConversionError (value: any, toType: IModelFillAblesTypes): TypeError {
+    return new TypeError(
+        `Conversion to type ${IModelFillAblesTypes[toType]} failed for value: ${value} (${typeof value})`
+    );
+  }
+
+  /**
    * Convert values to specific types
    *
    * @private
@@ -458,7 +472,7 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
       case IModelFillAblesTypes.NUMBER:
         returnValue = parseInt(value);
         if (isNaN(returnValue)) {
-          throw new TypeError(`Conversion from type ${typeof value} to number not supported`);
+          throw this.createConversionError(value, type);
         }
         break;
       case IModelFillAblesTypes.FLOAT:
@@ -479,14 +493,14 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
           } else if (angular.isObject(value) && !angular.isArray(value)) {
             returnValue = value;
           } else {
-            throw new TypeError(`Conversion from type ${typeof value} to object not supported`);
+            throw this.createConversionError(value, type);
           }
         break;
       case IModelFillAblesTypes.ARRAY:
           if (angular.isArray(value)) {
             returnValue = value;
           } else {
-            throw new TypeError(`Conversion from type ${typeof value} to array not supported`);
+            throw this.createConversionError(value, type);
           }
           break;
       default:
