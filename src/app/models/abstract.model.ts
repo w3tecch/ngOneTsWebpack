@@ -490,7 +490,6 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
           if (returnValue === undefined) {
             throw this.createConversionError(value, type);
           }
-        //returnValue = !!value;
         break;
       case IModelFillAblesTypes.DATE:
         returnValue = moment(value);

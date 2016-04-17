@@ -389,7 +389,7 @@ describe('abstract.model', () => {
             const validTypes = [22, 22.5, '22', '22.5'];
 
             validTypes.forEach((validType) => {
-                it(`should support Number from ${typeof validType} ${validType}`, () => {
+                it(`should create 22 from value ${validType} of type ${typeof validType}`, () => {
                     const model = new ComplexModel({num: validType});
                     expect(model.attributes).to.have.property('num', 22);
                     expect(model.attributes.num).to.be.a('number');
@@ -438,10 +438,31 @@ describe('abstract.model', () => {
 
         });
 
-        it('should support Float', () => {
-            const model = new ComplexModel({floatNum: '1.23'});
-            expect(model.attributes).to.have.property('floatNum', 1.23);
-            expect(model.attributes.floatNum).to.be.a('number');
+        describe('Float', () => {
+
+            const validTypes = [[22, 22], [22.5, 22.5], ['22', 22], ['22.5', 22.5]];
+
+            validTypes.forEach((validType) => {
+                const [input, output] = validType;
+                it(`should create ${output} from value ${input} of type ${typeof input}`, () => {
+                    const model = new ComplexModel({floatNum: validType});
+                    expect(model.attributes).to.have.property('floatNum', output);
+                    expect(model.attributes.floatNum).to.be.a('number');
+                });
+            });
+
+            const invalidTypes = [
+                [true, 'boolean'], [{}, 'object'],
+                ['test', 'NaN string'], [null, 'null'], [[], 'array']
+            ];
+
+            invalidTypes.forEach((invalidType) => {
+                const [value, type] = invalidType;
+                it(`should throw error if the input type is ${type}`, () => {
+                    expect(() => new ComplexModel({num: value})).to.throw(TypeError);
+                });
+            });
+
         });
 
         describe('Object', () => {
