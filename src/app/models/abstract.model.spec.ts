@@ -67,17 +67,50 @@ describe('abstract.model', () => {
     //});
     //
     //
-    //xdescribe('httpNotSendData', () => {
-    //
-    //    it('should be none by default', () => {
-    //
-    //    });
-    //
-    //    it('should be excluded from requests', () => {
-    //
-    //    });
-    //
-    //});
+
+    describe('httpNotSendData', () => {
+
+        class HttpNoSendDataModel extends TestModel {
+            constructor (attrs?: Object) {
+                super(attrs);
+                this.httpNotSendData = this.httpNotSendData.concat(['name', 'active']);
+            }
+        }
+
+        it('exclude properties "createdAt", "updatedAt" by default', () => {
+            const createMethod = sinon.spy(httpService, 'create');
+            const model = new TestModel({
+                name: 'Pippi', num: 25,
+                createdAt: 'just now', updatedAt: 'never'
+            });
+            model.save();
+            expect(createMethod).to.have.been.calledOnce;
+            expect(createMethod).to.have.been.calledWith('/users', {name: 'Pippi', num: 25});
+        });
+
+        it('exclude specified properties when sending a request via update', () => {
+            const updateMethod = sinon.spy(httpService, 'update');
+
+            const model = new HttpNoSendDataModel({
+                id: 1, name: 'Pippi', num: 25, active: true, floatNum: 99.9
+            });
+            model.save();
+            expect(updateMethod).to.have.been.calledOnce;
+            expect(updateMethod).to.have.been.calledWith('/users/1', {floatNum: 99.9, num: 25});
+        });
+
+        it('exclude specified properties when sending a request via save', () => {
+            const createMethod = sinon.spy(httpService, 'create');
+
+            const model = new HttpNoSendDataModel({
+                name: 'Pippi', num: 25, active: true, floatNum: 99.9
+            });
+            model.save();
+            expect(createMethod).to.have.been.calledOnce;
+            expect(createMethod).to.have.been.calledWith('/users', {floatNum: 99.9, num: 25});
+        });
+
+    });
 
     describe('instance creation', () => {
 
