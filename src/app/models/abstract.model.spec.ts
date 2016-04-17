@@ -658,3 +658,35 @@ describe('abstract.model-invalid response data', () => {
         });
     });
 });
+
+describe('DEEP', () => {
+
+    interface IDeepModelAttributes {
+        id: number;
+        name: string;
+        config: {
+            env: boolean;
+        };
+    }
+
+    interface IDeepModel extends IAbstractModel<IDeepModelAttributes> {}
+
+    class DeepModel extends AbstractModel<IDeepModelAttributes, IDeepModel> {
+        public static api = new DeepModel();
+        public rootUrl = 'users';
+        protected fillAbles(): IModelFillAbles {
+            return {
+                id: IModelFillAblesTypes.NUMBER,
+                name: IModelFillAblesTypes.STRING,
+                config: {
+                    env: IModelFillAblesTypes.BOOL
+                }
+            };
+        }
+    }
+
+    it('for objects', () => {
+        const model = new DeepModel({name: 'test', config: {env: 'true'}});
+        expect(model.attributes.config).to.have.property('env', true);
+    });
+});

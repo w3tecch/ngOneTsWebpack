@@ -11,7 +11,7 @@ import { IHttpUtilService } from './../common/services/utils/http.service.ts';
  * @interface IModelFillAbles
  */
 export interface IModelFillAbles {
-  [key: string]: IModelFillAblesTypes;
+  [key: string]: IModelFillAblesTypes | Object;
 }
 
 /**
@@ -427,10 +427,25 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    * @param {IModelAttributes} attrs
    * @returns {IModelAttributes}
    */
-  private fill(attrs: Object): K {
-    return attrs && Object.keys(this.fillAbles())
-      .map(key => angular.isDefined(attrs[key]) && (this.original[key] = this.convertToType(attrs[key], this.fillAbles()[key]))) &&
-      this.resetAttributes();
+  private fill(attrs: Object): void {
+    angular.extend(this.original, this.fillDeep(attrs, this.fillAbles()));
+    this.resetAttributes();
+    //return attrs && Object.keys(this.fillAbles())
+    //  .map(key => angular.isDefined(attrs[key]) && (this.original[key] = this.convertToType(attrs[key], this.fillAbles()[key]))) &&
+    //  this.resetAttributes();
+  }
+
+  private fillDeep (attrs: Object, fillAbles: IModelFillAbles): Object {
+    const fillAblesKeys = Object.keys(fillAbles);
+    let obj = {};
+    fillAblesKeys.forEach(key => {
+      if (angular.isDefined(attrs[key])) {
+        obj[key] = typeof fillAbles[key] === 'object'
+            ? this.fillDeep(attrs[key], <IModelFillAbles>fillAbles[key])
+            : this.convertToType(attrs[key], fillAbles[key]);
+      }
+    });
+    return obj;
   }
 
   /**
@@ -466,13 +481,13 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    * @param {IModelFillAblesTypes} type
    * @returns {T}
    */
-  private convertToType(value: any, type: IModelFillAblesTypes): any {
+  private convertToType(value: any, type: IModelFillAblesTypes | Object): any {
     let returnValue;
     switch (type) {
       case IModelFillAblesTypes.NUMBER:
         returnValue = parseInt(value);
         if (isNaN(returnValue)) {
-          throw this.createConversionError(value, type);
+          throw this.createConversionError(value, <IModelFillAblesTypes>type);
         }
         break;
       case IModelFillAblesTypes.FLOAT:
@@ -488,13 +503,13 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
           };
           returnValue = boolMap[value.toString()];
           if (returnValue === undefined) {
-            throw this.createConversionError(value, type);
+            throw this.createConversionError(value, <IModelFillAblesTypes>type);
           }
         break;
       case IModelFillAblesTypes.DATE:
         returnValue = moment(value);
         if (!returnValue.isValid()) {
-          throw this.createConversionError(value, type);
+          throw this.createConversionError(value, <IModelFillAblesTypes>type);
         }
         break;
       case IModelFillAblesTypes.OBJECT:
@@ -503,14 +518,14 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
           } else if (angular.isObject(value) && !angular.isArray(value)) {
             returnValue = value;
           } else {
-            throw this.createConversionError(value, type);
+            throw this.createConversionError(value, <IModelFillAblesTypes>type);
           }
         break;
       case IModelFillAblesTypes.ARRAY:
           if (angular.isArray(value)) {
             returnValue = value;
           } else {
-            throw this.createConversionError(value, type);
+            throw this.createConversionError(value, <IModelFillAblesTypes>type);
           }
           break;
       default:
@@ -528,7 +543,7 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    * @param {IModelFillAblesTypes} type (description)
    * @returns {T} (description)
    */
-  private convertToHttpType(value: any, type: IModelFillAblesTypes): any {
+  private convertToHttpType(value: any, type: IModelFillAblesTypes | Object): any {
     let returnValue = this.convertToType(value, type);
 
     if (type === IModelFillAblesTypes.DATE) {
