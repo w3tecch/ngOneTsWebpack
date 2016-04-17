@@ -521,6 +521,13 @@ describe('abstract.model', () => {
                     expect(date.isValid()).to.be.true;
                 });
 
+                it('should support Date from moment object', () => {
+                    const date = moment();
+                    const model = new ComplexModel();
+                    model.attributes.date = date;
+                    expect(model.attributes.date.isValid()).to.be.true;
+                });
+
                 it('should throw Error for invalid date inputs', () => {
                     expect(() => new ComplexModel({date: null})).to.throw(TypeError);
                 });
@@ -530,31 +537,34 @@ describe('abstract.model', () => {
 
         describe('to http', () => {
 
-            describe('Object', () => {
+            describe('Date', () => {
 
-                it('should create JSON parsable string from objects', () => {
-                    const model = new ComplexModel({config: {env: 'dev'}});
-                    const convertHttpSpy = sinon.spy(model, 'convertToHttpType');
+                it('should support Date from moment object', () => {
+                    const model = new ComplexModel();
+                    model.attributes.date = <any>'2016-04-17T13:29:07+00:00';
+                    const convertSpy = sinon.spy(model, 'convertToHttpType');
                     model.save();
-                    expect(convertHttpSpy).to.have.been.calledOnce;
-                    const convertedValue = JSON.parse(convertHttpSpy.returnValues[0]);
-                    expect(convertedValue).to.have.property('env', 'dev');
+                    const convertedDateString = convertSpy.returnValues[0];
+                    expect(convertedDateString).to.be.a('string');
+                    expect(moment(convertedDateString).isValid()).to.be.true;
                 });
 
-                const invalidTypes = [
-                    [[], 'array'], [1, 'number'], [null, 'null'],
-                    ['name: Jimbo', 'string'], [true, 'boolean']
-                ];
-
-                invalidTypes.forEach((invalidType) => {
-                    const [value, type] = invalidType;
-                    it(`should throw Error if the input type is ${type}`, () => {
-                        const model = new ComplexModel();
-                        model.attributes.config = <any>value;
-                        expect(() => model.save()).to.throw(TypeError);
-                    });
+                it('should support Date from moment object', () => {
+                    const date = moment();
+                    const model = new ComplexModel();
+                    model.attributes.date = date;
+                    const convertSpy = sinon.spy(model, 'convertToHttpType');
+                    model.save();
+                    const convertedDateString = convertSpy.returnValues[0];
+                    expect(convertedDateString).to.be.a('string');
+                    expect(moment(convertedDateString).isValid()).to.be.true;
                 });
 
+                it('should throw Error for invalid date inputs', () => {
+                    const model = new ComplexModel();
+                    model.attributes.date = null;
+                    expect(() => model.save()).to.throw(TypeError);
+                });
             });
 
         });

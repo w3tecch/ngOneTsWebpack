@@ -466,7 +466,7 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    * @param {IModelFillAblesTypes} type
    * @returns {T}
    */
-  private convertToType<T>(value: any, type: IModelFillAblesTypes): T {
+  private convertToType(value: any, type: IModelFillAblesTypes): any {
     let returnValue;
     switch (type) {
       case IModelFillAblesTypes.NUMBER:
@@ -528,34 +528,13 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    * @param {IModelFillAblesTypes} type (description)
    * @returns {T} (description)
    */
-  private convertToHttpType<T>(value: any, type: IModelFillAblesTypes): T {
-    let returnValue;
-    switch (type) {
-      case IModelFillAblesTypes.NUMBER:
-        returnValue = parseInt(value);
-        break;
-      case IModelFillAblesTypes.FLOAT:
-        returnValue = parseFloat(value);
-        break;
-      case IModelFillAblesTypes.STRING:
-        returnValue = value.toString();
-        break;
-      case IModelFillAblesTypes.BOOL:
-        returnValue = !!value;
-        break;
-      case IModelFillAblesTypes.DATE:
-        returnValue = moment(value).format(this.httpDateFormat);
-        break;
-      case IModelFillAblesTypes.OBJECT:
-          if (angular.isObject(value) && !angular.isArray(value)) {
-            returnValue = JSON.stringify(value);
-          } else {
-            throw this.createConversionError(value, type);
-          }
-        break;
-      default:
-        returnValue = value;
+  private convertToHttpType(value: any, type: IModelFillAblesTypes): any {
+    let returnValue = this.convertToType(value, type);
+
+    if (type === IModelFillAblesTypes.DATE) {
+      returnValue = moment(returnValue).format(this.httpDateFormat);
     }
+
     return returnValue;
   };
 
