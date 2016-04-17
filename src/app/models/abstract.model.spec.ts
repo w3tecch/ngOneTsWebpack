@@ -388,10 +388,32 @@ describe('abstract.model', () => {
 
         });
 
-        it('should support Number', () => {
-            const model = new ComplexModel({num: '22'});
-            expect(model.attributes).to.have.property('num', 22);
-            expect(model.attributes.num).to.be.a('number');
+        describe('Number', () => {
+
+            const validTypes = [22, 22.5, '22', '22.5'];
+
+            validTypes.forEach((validType) => {
+                it(`should support Number from ${typeof validType} ${validType}`, () => {
+                    const model = new ComplexModel({num: validType});
+                    expect(model.attributes).to.have.property('num', 22);
+                    expect(model.attributes.num).to.be.a('number');
+                });
+            });
+
+            /* tslint:disable no-null-keyword*/
+            const invalidTypes = [
+                [true, 'boolean'], [{}, 'object'],
+                ['test', 'string'], [null, 'null'], [[], 'array']
+            ];
+            /* tslint:enable no-null-keyword*/
+
+            invalidTypes.forEach((invalidType) => {
+                const [value, type] = invalidType;
+                it(`should throw error if the input type is ${type}`, () => {
+                    expect(() => new ComplexModel({num: value})).to.throw(TypeError);
+                });
+            });
+
         });
 
         it('should support Boolean', () => {

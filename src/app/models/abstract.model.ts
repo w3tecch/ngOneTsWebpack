@@ -457,6 +457,9 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
     switch (type) {
       case IModelFillAblesTypes.NUMBER:
         returnValue = parseInt(value);
+        if (isNaN(returnValue)) {
+          throw new TypeError(`Conversion from type ${typeof value} to number not supported`);
+        }
         break;
       case IModelFillAblesTypes.FLOAT:
         returnValue = parseFloat(value);
