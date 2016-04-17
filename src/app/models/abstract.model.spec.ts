@@ -50,23 +50,50 @@ describe('abstract.model', () => {
         }]);
     });
 
-    //xdescribe('identifier', () => {
-    //
-    //    it('should be by default "id"', () => {
-    //
-    //    });
-    //
-    //    it('should be excluded when sending requests by default', () => {
-    //
-    //    });
-    //
-    //    it('should be included in requests when configured', () => {
-    //
-    //    });
-    //
-    //});
-    //
-    //
+    describe('identifier', () => {
+
+        describe('exclusion from requests', () => {
+
+            class IdentifierModel extends TestModel {
+                constructor (attrs?: Object) {
+                    super(attrs);
+                    this.identifier = 'name';
+                }
+            }
+
+            it('should happen by default for identifier "id"', () => {
+                const updateMethod = sinon.spy(httpService, 'update');
+                const model = new TestModel({id: 55, name: 'Pippi'});
+                model.save();
+                expect(updateMethod).to.have.been.calledOnce;
+                expect(updateMethod).to.have.been.calledWith('/users/55', {name: 'Pippi'});
+            });
+
+            it('should be done for configured identifier', () => {
+                const updateMethod = sinon.spy(httpService, 'update');
+                const model = new IdentifierModel({name: 'Pippi', num: 55});
+                model.save();
+                expect(updateMethod).to.have.been.calledOnce;
+                expect(updateMethod).to.have.been.calledWith('/users/Pippi', {num: 55});
+            });
+
+        });
+
+        it('should be included in requests when configured', () => {
+            class SendIdentifierModel extends TestModel {
+                constructor (attrs?: Object) {
+                    super(attrs);
+                    this.httpSendIdentifier = true;
+                }
+            }
+            const updateMethod = sinon.spy(httpService, 'update');
+            const model = new SendIdentifierModel({id: 69, name: 'Pippi'});
+            model.save();
+            expect(updateMethod).to.have.been.calledOnce;
+            expect(updateMethod).to.have.been.calledWith('/users/69', {id: 69, name: 'Pippi'});
+        });
+
+    });
 
     describe('httpNotSendData', () => {
 
@@ -90,7 +117,6 @@ describe('abstract.model', () => {
 
         it('exclude specified properties when sending a request via update', () => {
             const updateMethod = sinon.spy(httpService, 'update');
-
             const model = new HttpNoSendDataModel({
                 id: 1, name: 'Pippi', num: 25, active: true, floatNum: 99.9
             });
@@ -101,7 +127,6 @@ describe('abstract.model', () => {
 
         it('exclude specified properties when sending a request via save', () => {
             const createMethod = sinon.spy(httpService, 'create');
-
             const model = new HttpNoSendDataModel({
                 name: 'Pippi', num: 25, active: true, floatNum: 99.9
             });
