@@ -4,6 +4,7 @@ import * as sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 const expect = chai.expect;
 
+import * as moment from 'moment';
 import AbstractModel, {IModelFillAbles, IModelFillAblesTypes, IAbstractModel} from './abstract.model.ts';
 import {IHttpUtilService} from '../common/services/utils/http.service.ts';
 import {httpService as httpServiceName} from '../common/services/services.module.ts';
@@ -343,6 +344,7 @@ describe('abstract.model', () => {
             num: number;
             active: boolean;
             floatNum: number;
+            date: moment.Moment;
         }
         interface IComplexModel extends IAbstractModel<IComplexModelAttrs> {};
         class ComplexModel extends AbstractModel<IComplexModelAttrs, IComplexModel> {
@@ -355,12 +357,13 @@ describe('abstract.model', () => {
                     languages: IModelFillAblesTypes.ARRAY,
                     num: IModelFillAblesTypes.NUMBER,
                     active: IModelFillAblesTypes.BOOL,
-                    floatNum: IModelFillAblesTypes.FLOAT
+                    floatNum: IModelFillAblesTypes.FLOAT,
+                    date: IModelFillAblesTypes.DATE
                 };
             }
         }
 
-        describe('conversation to type', () => {
+        describe('to type', () => {
 
             describe('String', () => {
 
@@ -512,7 +515,15 @@ describe('abstract.model', () => {
             });
 
             describe('Date', () => {
-                //TODO
+                it('should support Date from ISO 8601 string', () => {
+                    const model = new ComplexModel({date: '2016-04-17T13:29:07+00:00'});
+                    const date = model.attributes.date;
+                    expect(date.isValid()).to.be.true;
+                });
+
+                it('should throw Error for invalid date inputs', () => {
+                    expect(() => new ComplexModel({date: null})).to.throw(TypeError);
+                });
             });
 
         });

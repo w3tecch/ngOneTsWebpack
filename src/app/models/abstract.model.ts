@@ -493,6 +493,9 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
         break;
       case IModelFillAblesTypes.DATE:
         returnValue = moment(value);
+        if (!returnValue.isValid()) {
+          throw this.createConversionError(value, type);
+        }
         break;
       case IModelFillAblesTypes.OBJECT:
           if (typeof value === 'string') {
