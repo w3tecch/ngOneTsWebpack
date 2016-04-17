@@ -544,7 +544,11 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
         returnValue = moment(value).format(this.httpDateFormat);
         break;
       case IModelFillAblesTypes.OBJECT:
-        returnValue = JSON.stringify(value);
+          if (angular.isObject(value) && !angular.isArray(value)) {
+            returnValue = JSON.stringify(value);
+          } else {
+            throw this.createConversionError(value, type);
+          }
         break;
       default:
         returnValue = value;
