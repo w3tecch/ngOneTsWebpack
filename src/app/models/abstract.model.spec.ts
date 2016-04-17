@@ -1,3 +1,4 @@
+/* tslint:disable no-null-keyword*/
 
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
@@ -378,9 +379,7 @@ describe('abstract.model', () => {
             });
 
             it(`should throw error if the input type is null`, () => {
-                /* tslint:disable no-null-keyword*/
                 expect(() => new ComplexModel({name: null})).to.throw(TypeError);
-                /* tslint:enable */
             });
 
         });
@@ -397,12 +396,10 @@ describe('abstract.model', () => {
                 });
             });
 
-            /* tslint:disable no-null-keyword*/
             const invalidTypes = [
                 [true, 'boolean'], [{}, 'object'],
-                ['test', 'string'], [null, 'null'], [[], 'array']
+                ['test', 'NaN string'], [null, 'null'], [[], 'array']
             ];
-            /* tslint:enable no-null-keyword*/
 
             invalidTypes.forEach((invalidType) => {
                 const [value, type] = invalidType;
@@ -413,10 +410,32 @@ describe('abstract.model', () => {
 
         });
 
-        it('should support Boolean', () => {
-            const model = new ComplexModel({active: 'true'});
-            expect(model.attributes).to.have.property('active', true);
-            expect(model.attributes.active).to.be.a('boolean');
+        describe('Boolean', () => {
+
+            const validTypes = [
+                [true, 'boolean', true], [false, 'boolean', false],
+                ['true', 'string', true], ['false', 'string', false],
+                [1, 'number', true], [0, 'number', false]
+            ];
+
+            validTypes.forEach((validType) => {
+                const [input, type, output] = validType;
+                it(`should create boolean ${output} from value ${input} of type ${type}`, () => {
+                    const model = new ComplexModel({active: input});
+                    expect(model.attributes.active).to.be.a('boolean');
+                    expect(model.attributes).to.have.property('active', output);
+                });
+            });
+
+            const invalidTypes = [[{}, 'object'], [null, 'null'], [[], 'Array']];
+
+            invalidTypes.forEach((invalidType) => {
+                const [value, type] = invalidType;
+                it(`should throw Error if input type is ${type}`, () => {
+                    expect(() => new ComplexModel({active: value})).to.throw(TypeError);
+                });
+            });
+
         });
 
         it('should support Float', () => {
@@ -460,9 +479,8 @@ describe('abstract.model', () => {
                 expect(model.attributes.languages[0]).to.equal('DE');
                 expect(model.attributes.languages[1]).to.equal('EN');
             });
-            /* tslint:disable no-null-keyword*/
+
             const invalidTypes = [22, true, {}, 'test', null];
-            /* tslint:enable no-null-keyword*/
 
             invalidTypes.forEach((invalidType) => {
                 it(`should throw error if the input type is ${typeof invalidType}`, () => {
@@ -535,13 +553,7 @@ describe('abstract.model-invalid response data', () => {
     describe('convert to type fails', () => {
 
         it('handle invalid response data', (done) => {
-            httpBackend.when('GET', /.*\/complex\/1$/).respond(
-                {
-                    /* tslint:disable no-null-keyword*/
-                    name: null
-                    /* tslint:enable no-null-keyword*/
-                }
-            );
+            httpBackend.when('GET', /.*\/complex\/1$/).respond({name: null});
             TestModel.api.find(1).catch(() => {
                 done();
             });

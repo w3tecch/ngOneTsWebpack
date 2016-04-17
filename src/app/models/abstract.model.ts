@@ -482,7 +482,15 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
         returnValue = value.toString();
         break;
       case IModelFillAblesTypes.BOOL:
-        returnValue = !!value;
+          const boolMap = {
+            '1': true, 'true': true,
+            '0': false, 'false': false
+          };
+          returnValue = boolMap[value.toString()];
+          if (returnValue === undefined) {
+            throw this.createConversionError(value, type);
+          }
+        //returnValue = !!value;
         break;
       case IModelFillAblesTypes.DATE:
         returnValue = moment(value);
