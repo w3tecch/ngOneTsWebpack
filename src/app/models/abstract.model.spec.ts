@@ -377,13 +377,10 @@ describe('abstract.model', () => {
                 });
             });
 
-            //TODO FIX: null could appear
-            xit(`should support String from null`, () => {
+            it(`should throw error if the input type is null`, () => {
                 /* tslint:disable no-null-keyword*/
-                const model = new ComplexModel({name: null});
+                expect(() => new ComplexModel({name: null})).to.throw(TypeError);
                 /* tslint:enable */
-                expect(model.attributes).to.have.property('name', '');
-                expect(model.attributes.name).to.be.a('string');
             });
 
         });
