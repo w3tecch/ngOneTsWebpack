@@ -479,6 +479,13 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    */
   private convertToType(value: any, type: IModelFillAblesTypes | Object): any {
     let returnValue;
+
+    /* tslint:disable:no-null-keyword */
+    if (value === null) {
+      return undefined;
+    }
+    /* tslint:enable:no-null-keyword */
+
     switch (type) {
       case IModelFillAblesTypes.NUMBER:
         returnValue = parseInt(value);

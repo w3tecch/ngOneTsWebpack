@@ -423,6 +423,27 @@ describe('abstract.model', () => {
 
         describe('to type', () => {
 
+            describe('of nullable values', () => {
+                const testData = [
+                    ['name', IModelFillAblesTypes.STRING],
+                    ['config', IModelFillAblesTypes.OBJECT],
+                    ['languages', IModelFillAblesTypes.ARRAY],
+                    ['num', IModelFillAblesTypes.NUMBER],
+                    ['active', IModelFillAblesTypes.BOOL],
+                    ['floatNum', IModelFillAblesTypes.FLOAT],
+                    ['date', IModelFillAblesTypes.DATE]
+                ];
+
+                testData.forEach((data) => {
+                    const [prop, type] = data;
+                    it(`should convert null-${IModelFillAblesTypes[type]} to undefined`, () => {
+                        const model = new ComplexModel({}[prop] = null);
+                        expect(model.attributes).to.have.property(prop, undefined);
+                    });
+                });
+
+            });
+
             describe('String', () => {
 
                 const testData = [
@@ -438,10 +459,6 @@ describe('abstract.model', () => {
                         expect(model.attributes).to.have.property('name', expected);
                         expect(model.attributes.name).to.be.a('string');
                     });
-                });
-
-                it(`should throw error if the input type is null`, () => {
-                    expect(() => new ComplexModel({name: null})).to.throw(TypeError);
                 });
 
             });
@@ -460,7 +477,7 @@ describe('abstract.model', () => {
 
                 const invalidTypes = [
                     [true, 'boolean'], [{}, 'object'],
-                    ['test', 'NaN string'], [null, 'null'], [[], 'array']
+                    ['test', 'NaN string'], [[], 'array']
                 ];
 
                 invalidTypes.forEach((invalidType) => {
@@ -489,7 +506,7 @@ describe('abstract.model', () => {
                     });
                 });
 
-                const invalidTypes = [[{}, 'object'], [null, 'null'], [[], 'Array']];
+                const invalidTypes = [[{}, 'object'], [[], 'Array']];
 
                 invalidTypes.forEach((invalidType) => {
                     const [value, type] = invalidType;
@@ -515,7 +532,7 @@ describe('abstract.model', () => {
 
                 const invalidTypes = [
                     [true, 'boolean'], [{}, 'object'],
-                    ['test', 'NaN string'], [null, 'null'], [[], 'array']
+                    ['test', 'NaN string'], [[], 'array']
                 ];
 
                 invalidTypes.forEach((invalidType) => {
@@ -563,7 +580,7 @@ describe('abstract.model', () => {
                     expect(model.attributes.languages[1]).to.equal('EN');
                 });
 
-                const invalidTypes = [22, true, {}, 'test', null];
+                const invalidTypes = [22, true, {}, 'test'];
 
                 invalidTypes.forEach((invalidType) => {
                     it(`should throw error if the input type is ${typeof invalidType}`, () => {
@@ -584,10 +601,6 @@ describe('abstract.model', () => {
                     const model = new ComplexModel();
                     model.attributes.date = date;
                     expect(model.attributes.date.isValid()).to.be.true;
-                });
-
-                it('should throw Error for invalid date inputs', () => {
-                    expect(() => new ComplexModel({date: null})).to.throw(TypeError);
                 });
             });
 
@@ -618,11 +631,6 @@ describe('abstract.model', () => {
                     expect(moment(convertedDateString).isValid()).to.be.true;
                 });
 
-                it('should throw Error for invalid date inputs', () => {
-                    const model = new ComplexModel();
-                    model.attributes.date = null;
-                    expect(() => model.save()).to.throw(TypeError);
-                });
             });
 
         });
@@ -687,9 +695,7 @@ describe('abstract.model', () => {
                     new DeepModel(
                         {
                             level1: {
-                                level2: {
-                                    someString: null
-                                }
+                                someArr: true
                             }
                         }
                     )
