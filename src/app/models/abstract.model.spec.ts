@@ -728,12 +728,12 @@ describe('abstract.model', () => {
             });
 
             it('should be handled by bulkUpdateAttrs', () => {
-                const model = new DeepModel();
-                model.bulkUpdateAttrs({name: 'example', level1: {someBool: true, level2: {someString: 'ex2'}}});
+                const model = new DeepModel({id: 25, level1: {someArr: ['a']}});
+                model.bulkUpdateAttrs({name: 'example', level1: {someBool: true}});
+                expect(model.attributes).to.have.property('id', 25);
                 expect(model.attributes).to.have.property('name', 'example');
+                expect(model.attributes.level1).to.have.property('someArr');
                 expect(model.attributes.level1).to.have.property('someBool', true);
-                expect(model.attributes.level1).to.have.property('level2');
-                expect(model.attributes.level1.level2).to.have.property('someString', 'ex2');
             });
 
         });

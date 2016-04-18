@@ -234,7 +234,7 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    * @returns {IModelAttributes}
    */
   public bulkUpdateAttrs(list: Object): K {
-    return angular.extend(this.attributes, this.fillDeep(list, this.fillAbles()));
+    return angular.merge(this.attributes, this.fillDeep(list, this.fillAbles()));
   }
 
   /**
