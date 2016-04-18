@@ -727,6 +727,15 @@ describe('abstract.model', () => {
                 expect(model.attributes.level1.level2).to.have.property('date');
             });
 
+            it('should be handled by bulkUpdateAttrs', () => {
+                const model = new DeepModel();
+                model.bulkUpdateAttrs({name: 'example', level1: {someBool: true, level2: {someString: 'ex2'}}});
+                expect(model.attributes).to.have.property('name', 'example');
+                expect(model.attributes.level1).to.have.property('someBool', true);
+                expect(model.attributes.level1).to.have.property('level2');
+                expect(model.attributes.level1.level2).to.have.property('someString', 'ex2');
+            });
+
         });
 
     });
