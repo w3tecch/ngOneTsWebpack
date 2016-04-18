@@ -422,11 +422,8 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    * @returns {IModelAttributes}
    */
   private fill(attrs: Object): void {
-    angular.extend(this.original, this.fillDeep(attrs, this.fillAbles()));
+    this.original = <K>this.fillDeep(attrs, this.fillAbles());
     this.resetAttributes();
-    //return attrs && Object.keys(this.fillAbles())
-    //  .map(key => angular.isDefined(attrs[key]) && (this.original[key] = this.convertToType(attrs[key], this.fillAbles()[key]))) &&
-    //  this.resetAttributes();
   }
 
   private fillDeep (attrs: Object, fillAbles: IModelFillAbles, toHttp: boolean = false): Object {
