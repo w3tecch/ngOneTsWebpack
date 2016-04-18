@@ -390,13 +390,8 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    * @returns {IModelAttributes}
    */
   private convertToHttpData(attrs: K): K {
-    let tempHttpData = {};
-    Object.keys(this.fillAbles())
-      .forEach(key => {
-        if (angular.isDefined(attrs[key])) {
-          tempHttpData[key] = this.convertToHttpType(attrs[key], this.fillAbles()[key]);
-        }
-      });
+    let tempHttpData = this.fillDeep(attrs, this.fillAbles(), true);
+
     if (!this.httpSendIdentifier) {
       delete tempHttpData[this.identifier];
     }
@@ -435,14 +430,15 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
     //  this.resetAttributes();
   }
 
-  private fillDeep (attrs: Object, fillAbles: IModelFillAbles): Object {
+  private fillDeep (attrs: Object, fillAbles: IModelFillAbles, toHttp: boolean = false): Object {
+    const convert = toHttp ? this.convertToHttpType.bind(this) : this.convertToType.bind(this);
     const fillAblesKeys = Object.keys(fillAbles);
     let obj = {};
     fillAblesKeys.forEach(key => {
       if (angular.isDefined(attrs[key])) {
         obj[key] = typeof fillAbles[key] === 'object'
-            ? this.fillDeep(attrs[key], <IModelFillAbles>fillAbles[key])
-            : this.convertToType(attrs[key], fillAbles[key]);
+            ? this.fillDeep(attrs[key], <IModelFillAbles>fillAbles[key], toHttp)
+            : convert(attrs[key], fillAbles[key]);
       }
     });
     return obj;

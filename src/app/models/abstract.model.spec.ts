@@ -627,6 +627,97 @@ describe('abstract.model', () => {
 
         });
 
+        describe('nested types', () => {
+
+            interface IDeepModelAttributes {
+                id: number;
+                name: string;
+                level1: {
+                    someBool: boolean;
+                    someArr: Array<string>;
+                    level2: {
+                        someString: string
+                        date: moment.Moment;
+                    }
+                };
+            }
+
+            interface IDeepModel extends IAbstractModel<IDeepModelAttributes> {}
+
+            class DeepModel extends AbstractModel<IDeepModelAttributes, IDeepModel> {
+                public static api = new DeepModel();
+                public rootUrl = 'users';
+                protected fillAbles(): IModelFillAbles {
+                    return {
+                        id: IModelFillAblesTypes.NUMBER,
+                        name: IModelFillAblesTypes.STRING,
+                        level1: {
+                            someBool: IModelFillAblesTypes.BOOL,
+                            someArr: IModelFillAblesTypes.ARRAY,
+                            level2: {
+                                someString: IModelFillAblesTypes.STRING,
+                                date: IModelFillAblesTypes.DATE
+                            }
+                        }
+                    };
+                }
+            }
+
+            it('should convert nested objects according to fillAbles structure', () => {
+                const model = new DeepModel(
+                    {name: 'test',
+                        level1: {
+                            someBool: 'true',
+                            someArr: ['a', 'b'],
+                            level2: {
+                                someString: 'hello'
+                            }
+                        }
+                    }
+                );
+                expect(model.attributes.level1).to.have.property('someBool', true);
+                expect(model.attributes.level1.someArr).to.be.instanceof(Array);
+                expect(model.attributes.level1.someArr).to.have.property('0', 'a');
+                expect(model.attributes.level1.someArr).to.have.property('1', 'b');
+                expect(model.attributes.level1.level2).to.have.property('someString', 'hello');
+            });
+
+            it('should throw an Error if type mismatch in nested object', () => {
+                expect(() =>
+                    new DeepModel(
+                        {
+                            level1: {
+                                level2: {
+                                    someString: null
+                                }
+                            }
+                        }
+                    )
+                ).to.throw(TypeError);
+            });
+
+            it('should use nested conversion to http', () => {
+                const date = moment();
+                const model = new DeepModel(
+                    {
+                        level1: {
+                            level2: {
+                            }
+                        }
+                    }
+                );
+                model.attributes.level1.level2.date = date;
+                const createSpy = sinon.spy(model, 'create');
+                model.save();
+                const attrObject = createSpy.args[0][0];
+                expect(attrObject).to.be.a('object');
+                const convertedDate = attrObject.level1.level2.date;
+                expect(convertedDate).is.a('string');
+                expect(moment(convertedDate).isValid()).to.be.true;
+            });
+
+        });
+
     });
 
 });
@@ -656,37 +747,5 @@ describe('abstract.model-invalid response data', () => {
             });
             httpBackend.flush();
         });
-    });
-});
-
-describe('DEEP', () => {
-
-    interface IDeepModelAttributes {
-        id: number;
-        name: string;
-        config: {
-            env: boolean;
-        };
-    }
-
-    interface IDeepModel extends IAbstractModel<IDeepModelAttributes> {}
-
-    class DeepModel extends AbstractModel<IDeepModelAttributes, IDeepModel> {
-        public static api = new DeepModel();
-        public rootUrl = 'users';
-        protected fillAbles(): IModelFillAbles {
-            return {
-                id: IModelFillAblesTypes.NUMBER,
-                name: IModelFillAblesTypes.STRING,
-                config: {
-                    env: IModelFillAblesTypes.BOOL
-                }
-            };
-        }
-    }
-
-    it('for objects', () => {
-        const model = new DeepModel({name: 'test', config: {env: 'true'}});
-        expect(model.attributes.config).to.have.property('env', true);
     });
 });
