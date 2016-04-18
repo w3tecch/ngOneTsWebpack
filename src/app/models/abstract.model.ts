@@ -11,7 +11,7 @@ import { IHttpUtilService } from './../common/services/utils/http.service.ts';
  * @interface IModelFillAbles
  */
 export interface IModelFillAbles {
-  [key: string]: IModelFillAblesTypes | Object;
+  [key: string]: IModelFillAblesTypes | IModelFillAbles;
 }
 
 /**
@@ -450,8 +450,12 @@ abstract class AbstractModel<K extends IModelAttributes, J extends IAbstractMode
    * @private
    * @returns {IModelAttributes}
    */
-  private fillEmpty(): void {
-    Object.keys(this.fillAbles()).map(key => this.attributes[key] = undefined);
+  private fillEmpty(attrs: Object = this.attributes, fillAbles: IModelFillAbles = this.fillAbles()): Object {
+    Object.keys(fillAbles).map(key =>
+        attrs[key] = typeof fillAbles[key] === 'object'
+            ? this.fillEmpty(attrs[key], <IModelFillAbles>fillAbles[key])
+            : undefined);
+    return attrs;
   }
 
   /**

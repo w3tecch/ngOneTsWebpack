@@ -716,6 +716,17 @@ describe('abstract.model', () => {
                 expect(moment(convertedDate).isValid()).to.be.true;
             });
 
+            it('should create empty structure according to IModelFillAbles definition', () => {
+                const model = new DeepModel();
+                expect(model.attributes).to.have.property('name');
+                expect(model.attributes).to.have.property('level1');
+                expect(model.attributes.level1).to.have.property('someBool');
+                expect(model.attributes.level1).to.have.property('someArr');
+                expect(model.attributes.level1).to.have.property('level2');
+                expect(model.attributes.level1.level2).to.have.property('someString');
+                expect(model.attributes.level1.level2).to.have.property('date');
+            });
+
         });
 
     });
