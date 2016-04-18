@@ -438,7 +438,7 @@ describe('abstract.model', () => {
                     const [prop, type] = data;
                     it(`should convert null-${IModelFillAblesTypes[type]} to undefined`, () => {
                         const model = new ComplexModel({}[prop] = null);
-                        expect(model.attributes).to.have.property(prop, undefined);
+                        expect(model.attributes).to.have.property(<string>prop, undefined);
                     });
                 });
 
