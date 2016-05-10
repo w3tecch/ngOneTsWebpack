@@ -46,7 +46,7 @@
     "gulp": "^3.8.11",
     "gulp-connect": "^4.0.0",
     "gulp-task-listing": "^1.0.1",
-    "gulp-typedoc": "^1.2.1",
+    "gulp-typedoc": "^2.0.0",
     "html-loader": "^0.4.3",
     "html-webpack-plugin": "^2.7.2",
     "http-server": "^0.9.0",
