@@ -70,7 +70,7 @@
     "lodash": "^4.11.1",
     "mocha": "^2.4.5",
     "ncp": "^2.0.0",
-    "node-notifier": "^4.3.1",
+    "node-notifier": "^4.6.0",
     "node-sass": "^3.4.2",
     "path": "^0.12.7",
     "phantomjs": "^2.1.7",
