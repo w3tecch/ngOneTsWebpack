@@ -26,7 +26,7 @@
 -
 
 #Supporter
-[![BrowserStack](https://cdn.rawgit.com/w3tecch/ng1-ts-boilerplate/browserstack/supporters/browserStack.svg)](https://www.browserstack.com)
+[![BrowserStack](https://cdn.rawgit.com/w3tecch/ng1-ts-boilerplate/browserstack/supporters/browserStack.svg =250x)](https://www.browserstack.com)
 
 #License
 
