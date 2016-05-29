@@ -37,7 +37,7 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^5.1.0",
     "chalk": "^1.0.0",
-    "command-line-args": "^2.1.4",
+    "command-line-args": "^3.0.0",
     "css-loader": "^0.23.1",
     "del": "^2.2.0",
     "expose-loader": "^0.7.1",
