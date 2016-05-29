@@ -25,6 +25,9 @@
 #Usefull Libraries
 -
 
+#Supporter
+[![BrowserStack](supporters/browserStack.svg)](https://www.browserstack.com)
+
 #License
 
 [MIT](/LICENSE)
