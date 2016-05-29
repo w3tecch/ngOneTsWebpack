@@ -26,7 +26,7 @@
 -
 
 #Supporter
-[![BrowserStack](supporters/browserStack.svg)](https://www.browserstack.com)
+[![BrowserStack](https://github.com/w3tecch/ng1-ts-boilerplate/blob/develop/supporters/browserStack.svg)](https://www.browserstack.com)
 
 #License
 
