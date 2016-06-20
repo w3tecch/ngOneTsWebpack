@@ -47,7 +47,7 @@
     "expose-loader": "^0.7.1",
     "extract-text-webpack-plugin": "^1.0.1",
     "compression-webpack-plugin": "^0.3.1",
-    "file-loader": "^0.8.5",
+    "file-loader": "^0.9.0",
     "gulp": "^3.8.11",
     "gulp-connect": "^4.0.0",
     "gulp-task-listing": "^1.0.1",
