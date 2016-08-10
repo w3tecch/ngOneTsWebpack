@@ -51,4 +51,3 @@ angular
       const logger = new Logger('app.ts').debug('AppConfig');
       logger(AppConfig);
   });
-
