@@ -56,7 +56,7 @@ module.exports = function makeWebpackConfig(options) {
       path: helpers.root('dist'),
       filename: BUILD ? '[name].[hash].js' : '[name].bundle.js',
       sourceMapFilename: 'bundle.map',
-      publicPath: BUILD ? '/' : 'http://' + helpers.getMetadata().host + ':' + helpers.getMetadata().port + '/'
+      publicPath: options.PUBLICPATH ? options.PUBLICPATH : '/'
     };
   }
 
