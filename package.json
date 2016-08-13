@@ -80,7 +80,7 @@
     "path": "^0.12.7",
     "phantomjs-polyfill": "0.0.2",
     "phantomjs-prebuilt": "^2.1.9",
-    "postcss-loader": "^0.9.1",
+    "postcss-loader": "^0.10.0",
     "precss": "^1.4.0",
     "protractor": "^4.0.3",
     "raw-loader": "^0.5.1",
