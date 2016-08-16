@@ -98,6 +98,6 @@
     "webpack": "^1.12.14",
     "webpack-dev-server": "^1.14.1",
     "wiredep": "^4.0.0",
-    "yargs": "^4.6.0"
+    "yargs": "^5.0.0"
   }
 }
